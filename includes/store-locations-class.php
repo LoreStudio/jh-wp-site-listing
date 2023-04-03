@@ -6,16 +6,623 @@ error_reporting(E_ALL);*/
  * The file contains all the plugin related functions
  */
 if ( !class_exists( 'Store_Locations' ) ) {
+
 	class Store_Locations {
-		var $show_direction = false;		
-		public function __construct() {	
+
+		var $show_direction = false;
+
+		var $country_list = array(
+			"AF" => "Afghanistan",
+			"AL" => "Albania",
+			"DZ" => "Algeria",
+			"AS" => "American Samoa",
+			"AD" => "Andorra",
+			"AO" => "Angola",
+			"AI" => "Anguilla",
+			"AQ" => "Antarctica",
+			"AG" => "Antigua and Barbuda",
+			"AR" => "Argentina",
+			"AM" => "Armenia",
+			"AW" => "Aruba",
+			"AU" => "Australia",
+			"AT" => "Austria",
+			"AZ" => "Azerbaijan",
+			"BS" => "Bahamas",
+			"BH" => "Bahrain",
+			"BD" => "Bangladesh",
+			"BB" => "Barbados",
+			"BY" => "Belarus",
+			"BE" => "Belgium",
+			"BZ" => "Belize",
+			"BJ" => "Benin",
+			"BM" => "Bermuda",
+			"BT" => "Bhutan",
+			"BO" => "Bolivia",
+			"BA" => "Bosnia and Herzegovina",
+			"BW" => "Botswana",
+			"BV" => "Bouvet Island",
+			"BR" => "Brazil",
+			"BQ" => "British Antarctic Territory",
+			"IO" => "British Indian Ocean Territory",
+			"VG" => "British Virgin Islands",
+			"BN" => "Brunei",
+			"BG" => "Bulgaria",
+			"BF" => "Burkina Faso",
+			"BI" => "Burundi",
+			"KH" => "Cambodia",
+			"CM" => "Cameroon",
+			"CA" => "Canada",
+			"CT" => "Canton and Enderbury Islands",
+			"CV" => "Cape Verde",
+			"KY" => "Cayman Islands",
+			"CF" => "Central African Republic",
+			"TD" => "Chad",
+			"CL" => "Chile",
+			"CN" => "China",
+			"CX" => "Christmas Island",
+			"CC" => "Cocos [Keeling] Islands",
+			"CO" => "Colombia",
+			"KM" => "Comoros",
+			"CG" => "Congo - Brazzaville",
+			"CD" => "Congo - Kinshasa",
+			"CK" => "Cook Islands",
+			"CR" => "Costa Rica",
+			"HR" => "Croatia",
+			"CU" => "Cuba",
+			"CY" => "Cyprus",
+			"CZ" => "Czech Republic",
+			"CI" => "Côte d’Ivoire",
+			"DK" => "Denmark",
+			"DJ" => "Djibouti",
+			"DM" => "Dominica",
+			"DO" => "Dominican Republic",
+			"NQ" => "Dronning Maud Land",
+			"DD" => "East Germany",
+			"EC" => "Ecuador",
+			"EG" => "Egypt",
+			"SV" => "El Salvador",
+			"GQ" => "Equatorial Guinea",
+			"ER" => "Eritrea",
+			"EE" => "Estonia",
+			"ET" => "Ethiopia",
+			"FK" => "Falkland Islands",
+			"FO" => "Faroe Islands",
+			"FJ" => "Fiji",
+			"FI" => "Finland",
+			"FR" => "France",
+			"GF" => "French Guiana",
+			"PF" => "French Polynesia",
+			"TF" => "French Southern Territories",
+			"FQ" => "French Southern and Antarctic Territories",
+			"GA" => "Gabon",
+			"GM" => "Gambia",
+			"GE" => "Georgia",
+			"DE" => "Germany",
+			"GH" => "Ghana",
+			"GI" => "Gibraltar",
+			"GR" => "Greece",
+			"GL" => "Greenland",
+			"GD" => "Grenada",
+			"GP" => "Guadeloupe",
+			"GU" => "Guam",
+			"GT" => "Guatemala",
+			"GG" => "Guernsey",
+			"GN" => "Guinea",
+			"GW" => "Guinea-Bissau",
+			"GY" => "Guyana",
+			"HT" => "Haiti",
+			"HM" => "Heard Island and McDonald Islands",
+			"HN" => "Honduras",
+			"HK" => "Hong Kong SAR China",
+			"HU" => "Hungary",
+			"IS" => "Iceland",
+			"IN" => "India",
+			"ID" => "Indonesia",
+			"IR" => "Iran",
+			"IQ" => "Iraq",
+			"IE" => "Ireland",
+			"IM" => "Isle of Man",
+			"IL" => "Israel",
+			"IT" => "Italy",
+			"JM" => "Jamaica",
+			"JP" => "Japan",
+			"JE" => "Jersey",
+			"JT" => "Johnston Island",
+			"JO" => "Jordan",
+			"KZ" => "Kazakhstan",
+			"KE" => "Kenya",
+			"KI" => "Kiribati",
+			"KW" => "Kuwait",
+			"KG" => "Kyrgyzstan",
+			"LA" => "Laos",
+			"LV" => "Latvia",
+			"LB" => "Lebanon",
+			"LS" => "Lesotho",
+			"LR" => "Liberia",
+			"LY" => "Libya",
+			"LI" => "Liechtenstein",
+			"LT" => "Lithuania",
+			"LU" => "Luxembourg",
+			"MO" => "Macau SAR China",
+			"MK" => "Macedonia",
+			"MG" => "Madagascar",
+			"MW" => "Malawi",
+			"MY" => "Malaysia",
+			"MV" => "Maldives",
+			"ML" => "Mali",
+			"MT" => "Malta",
+			"MH" => "Marshall Islands",
+			"MQ" => "Martinique",
+			"MR" => "Mauritania",
+			"MU" => "Mauritius",
+			"YT" => "Mayotte",
+			"FX" => "Metropolitan France",
+			"MX" => "Mexico",
+			"FM" => "Micronesia",
+			"MI" => "Midway Islands",
+			"MD" => "Moldova",
+			"MC" => "Monaco",
+			"MN" => "Mongolia",
+			"ME" => "Montenegro",
+			"MS" => "Montserrat",
+			"MA" => "Morocco",
+			"MZ" => "Mozambique",
+			"MM" => "Myanmar [Burma]",
+			"NA" => "Namibia",
+			"NR" => "Nauru",
+			"NP" => "Nepal",
+			"NL" => "Netherlands",
+			"AN" => "Netherlands Antilles",
+			"NT" => "Neutral Zone",
+			"NC" => "New Caledonia",
+			"NZ" => "New Zealand",
+			"NI" => "Nicaragua",
+			"NE" => "Niger",
+			"NG" => "Nigeria",
+			"NU" => "Niue",
+			"NF" => "Norfolk Island",
+			"KP" => "North Korea",
+			"VD" => "North Vietnam",
+			"MP" => "Northern Mariana Islands",
+			"NO" => "Norway",
+			"OM" => "Oman",
+			"PC" => "Pacific Islands Trust Territory",
+			"PK" => "Pakistan",
+			"PW" => "Palau",
+			"PS" => "Palestinian Territories",
+			"PA" => "Panama",
+			"PZ" => "Panama Canal Zone",
+			"PG" => "Papua New Guinea",
+			"PY" => "Paraguay",
+			"YD" => "People's Democratic Republic of Yemen",
+			"PE" => "Peru",
+			"PH" => "Philippines",
+			"PN" => "Pitcairn Islands",
+			"PL" => "Poland",
+			"PT" => "Portugal",
+			"PR" => "Puerto Rico",
+			"QA" => "Qatar",
+			"RO" => "Romania",
+			"RU" => "Russia",
+			"RW" => "Rwanda",
+			"RE" => "Réunion",
+			"BL" => "Saint Barthélemy",
+			"SH" => "Saint Helena",
+			"KN" => "Saint Kitts and Nevis",
+			"LC" => "Saint Lucia",
+			"MF" => "Saint Martin",
+			"PM" => "Saint Pierre and Miquelon",
+			"VC" => "Saint Vincent and the Grenadines",
+			"WS" => "Samoa",
+			"SM" => "San Marino",
+			"SA" => "Saudi Arabia",
+			"SN" => "Senegal",
+			"RS" => "Serbia",
+			"CS" => "Serbia and Montenegro",
+			"SC" => "Seychelles",
+			"SL" => "Sierra Leone",
+			"SG" => "Singapore",
+			"SK" => "Slovakia",
+			"SI" => "Slovenia",
+			"SB" => "Solomon Islands",
+			"SO" => "Somalia",
+			"ZA" => "South Africa",
+			"GS" => "South Georgia and the South Sandwich Islands",
+			"KR" => "South Korea",
+			"ES" => "Spain",
+			"LK" => "Sri Lanka",
+			"SD" => "Sudan",
+			"SR" => "Suriname",
+			"SJ" => "Svalbard and Jan Mayen",
+			"SZ" => "Swaziland",
+			"SE" => "Sweden",
+			"CH" => "Switzerland",
+			"SY" => "Syria",
+			"ST" => "São Tomé and Príncipe",
+			"TW" => "Taiwan",
+			"TJ" => "Tajikistan",
+			"TZ" => "Tanzania",
+			"TH" => "Thailand",
+			"TL" => "Timor-Leste",
+			"TG" => "Togo",
+			"TK" => "Tokelau",
+			"TO" => "Tonga",
+			"TT" => "Trinidad and Tobago",
+			"TN" => "Tunisia",
+			"TR" => "Turkey",
+			"TM" => "Turkmenistan",
+			"TC" => "Turks and Caicos Islands",
+			"TV" => "Tuvalu",
+			"UM" => "U.S. Minor Outlying Islands",
+			"PU" => "U.S. Miscellaneous Pacific Islands",
+			"VI" => "U.S. Virgin Islands",
+			"UG" => "Uganda",
+			"UA" => "Ukraine",
+			"SU" => "Union of Soviet Socialist Republics",
+			"AE" => "United Arab Emirates",
+			"GB" => "United Kingdom",
+			"US" => "United States",
+			"ZZ" => "Unknown or Invalid Region",
+			"UY" => "Uruguay",
+			"UZ" => "Uzbekistan",
+			"VU" => "Vanuatu",
+			"VA" => "Vatican City",
+			"VE" => "Venezuela",
+			"VN" => "Vietnam",
+			"WK" => "Wake Island",
+			"WF" => "Wallis and Futuna",
+			"EH" => "Western Sahara",
+			"YE" => "Yemen",
+			"ZM" => "Zambia",
+			"ZW" => "Zimbabwe",
+			"AX" => "Åland Islands",
+		);
+
+		var $flags_array = array ( 
+			'sq' => array(
+				'sq',
+				'sq.svg',
+				'Albanian'
+			),
+			'ar' => array(
+				'ar',
+				'ar.svg',
+				'Arabic'
+			),
+			'hy' => array(
+				'hy',
+				'hy.svg',
+				'Armenian'
+			),
+			'az' => array(
+				'az',
+				'az.svg',
+				'Azerbaijani'
+			),
+			'eu' => array(
+				'eu',
+				'eu.svg',
+				'Basque'
+			),
+			'bn' => array(
+				'bn',
+				'bn.svg',
+				'Bengali'
+			),
+			'bs' => array(
+				'bs',
+				'bs.svg',
+				'Bosnian'
+			),
+			'bg' => array(
+				'bg',
+				'bg.svg',
+				'Bulgarian'
+			),
+			'ca' => array(
+				'ca',
+				'ca.svg',
+				'Catalan'
+			),
+			'zh-hans' => array(
+				'zh-hans',
+				'zh-hans.svg',
+				'Chinese (Simplified)'
+			),
+			'zh-hant' => array(
+				'zh-hant',
+				'zh-hant.svg',
+				'Chinese (Traditional)'
+			),
+			'hr' => array(
+				'hr',
+				'hr.svg',
+				'Croatian'
+			),
+			'cs' => array(
+				'cs',
+				'cs.svg',
+				'Czech'
+			),
+			'da' => array(
+				'da',
+				'da.svg',
+				'Danish'
+			),
+			'nl' => array(
+				'nl',
+				'nl.svg',
+				'Dutch'
+			),
+			'en' => array(
+				'en',
+				'us.png',
+				'English'
+			),
+			'eo' => array(
+				'eo',
+				'eo.svg',
+				'Esperanto'
+			),
+			'et' => array(
+				'et',
+				'et.svg',
+				'Estonian'
+			),
+			'fi' => array(
+				'fi',
+				'fi.svg',
+				'Finnish'
+			),
+			'fr' => array(
+				'fr',
+				'fr.svg',
+				'French	'
+			),
+			'gl' => array(
+				'gl',
+				'gl.svg',
+				'Galician'
+			),
+			'de' => array(
+				'de',
+				'de.svg',
+				'German	'
+			),
+			'el' => array(
+				'el',
+				'el.svg',
+				'Greek	'
+			),
+			'he' => array(
+				'he',
+				'he.svg',
+				'Hebrew	'
+			),
+			'hi' => array(
+				'hi',
+				'hi.svg',
+				'Hindi	'
+			),
+			'hu' => array(
+				'hu',
+				'hu.svg',
+				'Hungarian'
+			),
+			'is' => array(
+				'is',
+				'is.svg',
+				'Icelandic'
+			),
+			'id' => array(
+				'id',
+				'id.svg',
+				'Indonesian'
+			),
+			'ga' => array(
+				'ga',
+				'ga.svg',
+				'Irish'
+			),
+			'it' => array(
+				'it',
+				'it.svg',
+				'Italian'
+			),
+			'ja' => array(
+				'ja',
+				'ja.svg',
+				'Japanese'
+			),
+			'ko' => array(
+				'ko',
+				'ko.svg',
+				'Korean'
+			),
+			'ku' => array(
+				'ku',
+				'ku.svg',
+				'Kurdish'
+			),
+			'lv' => array(
+				'lv',
+				'lv.svg',
+				'Latvian'
+			),
+			'lt' => array(
+				'lt',
+				'lt.svg',
+				'Lithuanian'
+			),
+			'mk' => array(
+				'mk',
+				'mk.svg',
+				'Macedonian'
+			),
+			'ms' => array(
+				'ms',
+				'ms.svg',
+				'Malay'
+			),
+			'mt' => array(
+				'mt',
+				'mt.svg',
+				'Maltese'
+			),
+			'mn' => array(
+				'mn',
+				'mn.svg',
+				'Mongolian'
+			),
+			'ne' => array(
+				'ne',
+				'ne.svg',
+				'Nepali'
+			),
+			'no' => array(
+				'no',
+				'no.svg',
+				'Norwegian Bokmål'
+			),
+			'fa' => array(
+				'fa',
+				'fa.svg',
+				'Persian'
+			),
+			'pl' => array(
+				'pl',
+				'pl.svg',
+				'Polish	'
+			),
+			'pt-br' => array(
+				'pt-br',
+				'pt-br.svg',
+				'Portuguese (Brazil)'
+			),
+			'pt-pt' => array(
+				'pt-pt',
+				'pt-pt.svg',
+				'Portuguese (Portugal)'
+			),
+			'pa' => array(
+				'pa',
+				'pa.svg',
+				'Punjabi'
+			),
+			'qu' => array(
+				'qu',
+				'qu.svg',
+				'Quechua'
+			),
+			'ro' => array(
+				'ro',
+				'ro.svg',
+				'Romanian'
+			),
+			'ru' => array(
+				'ru',
+				'ru.svg',
+				'Russian'
+			),
+			'sr' => array(
+				'sr',
+				'sr.svg',
+				'Serbian'
+			),
+			'sk' => array(
+				'sk',
+				'sk.svg',
+				'Slovak'
+			),
+			'sl' => array(
+				'sl',
+				'sl.svg',
+				'Slovenian'
+			),
+			'so' => array(
+				'so',
+				'so.svg',
+				'Somali'
+			),
+			'es' => array(
+				'es',
+				'es.svg',
+				'Spanish'
+			),
+			'es-us' => array(
+				'es-us',
+				'us.png',
+				'Spanish (US)'
+			),
+			'sv' => array(
+				'sv',
+				'sv.svg',
+				'Swedish'
+			),
+			'ta' => array(
+				'ta',
+				'ta.svg',
+				'Tamil'
+			),
+			'th' => array(
+				'th',
+				'th.svg',
+				'Thai'
+			),
+			'tr' => array(
+				'tr',
+				'tr.svg',
+				'Turkish'
+			),
+			'uk' => array(
+				'uk',
+				'uk.svg',
+				'Ukrainian'
+			),
+			'ur' => array(
+				'ur',
+				'ur.svg',
+				'Urdu'
+			),
+			'uz' => array(
+				'uz',
+				'uz.svg',
+				'Uzbek'
+			),
+			'vi' => array(
+				'vi',
+				'vi.svg',
+				'Vietnamese'
+			),
+			'cy' => array(
+				'cy',
+				'cy.svg',
+				'Welsh'
+			),
+			'yi' => array(
+				'yi',
+				'yi.svg',
+				'Yiddish'
+			),
+			'zu' => array(
+				'zu',
+				'zu.svg',
+				'Zulu'
+			)
+		);
+
+		public function __construct ( ) {	
 			
 			if( 'yes' == esc_attr( get_option( 'show_direction_link' ) ) ){
 				$this->show_direction = true;
 			}
 			add_action( 'init',              		[$this, 'location_register_post_types'] );
+
 			add_action( 'admin_enqueue_scripts', 	[$this, 'admin_store_locations_scripts'] );
+			add_action( 'admin_enqueue_scripts', 	[$this, 'admin_store_locations_styles'] );
+
 			add_action( 'wp_enqueue_scripts', 		[$this, 'store_locations_scripts'] );
+
 			add_action( 'admin_menu', 				[$this, 'store_loc_setting_page'] );
 
 			add_shortcode( 'language', 				[$this, 'get_language_shortcode'] );
@@ -27,12 +634,20 @@ if ( !class_exists( 'Store_Locations' ) ) {
 
 			add_action( 'wp_ajax_search_location_near', [ $this, 'search_location_near'] );
 			add_action( 'wp_ajax_nopriv_search_location_near', [ $this, 'search_location_near'] );
+
+			add_filter( 'manage_locations_posts_columns', [$this, 'columns_locations'] );
+			add_action( 'manage_locations_posts_custom_column', [$this, 'columns_locations_data'], 10, 2 );
+
+			add_action( 'load-edit.php', 			[$this, 'load_custom_filter_wpse_94630'] );
+			add_action( 'restrict_manage_posts', 	[$this, 'wpse45436_admin_posts_filter_restrict_manage_posts'], 10, 1 );
+
 			
 		}
 		// front end enque scripts
-		public function store_locations_scripts(){
+		public function store_locations_scripts ( ) {
+
 			wp_enqueue_script('jquery');
-			wp_enqueue_style( 'store-loc-style',  LOCATION_DIR_URI. 'includes/css/store-loc-plugin.css', array(), '1.0.0', 'all');	
+			wp_enqueue_style( 'store-loc-style',  LOCATION_DIR_URI. 'includes/css/store-loc-plugin.css', array(), '1.0.0', 'all' );	
 			//wp_enqueue_script( 'store-loc-js', LOCATION_DIR_URI . 'includes/js/store-loc.js', array(), '1.0.0', true );	
 			wp_register_script("store-loc-js",LOCATION_DIR_URI . 'includes/js/store-loc.js', array(), "1.0", false);
 			$apikey = esc_attr(get_option('gmap_api_key'));
@@ -47,8 +662,8 @@ if ( !class_exists( 'Store_Locations' ) ) {
 			];
 			wp_localize_script( 'store-loc-js', 'front_object', $local_variables );	
 		}
-		// only admin scripts
-		public function admin_store_locations_scripts( ){
+		// admin scripts
+		public function admin_store_locations_scripts ( ) {
 			$apikey = esc_attr(get_option('gmap_api_key'));
 
 			if ( ! empty( $apikey ) ) {
@@ -58,8 +673,12 @@ if ( !class_exists( 'Store_Locations' ) ) {
 			}				
 			wp_enqueue_script( 'admin-store-js', LOCATION_DIR_URI . 'admin/js/admin-store.js', array(), '1.0.0', true );		
 		}
+		// admin styles
+		public function admin_store_locations_styles ( ) {
+			wp_enqueue_style( 'store-loc-admin-style',  LOCATION_DIR_URI . 'admin/css/styles.css', array(), '1.0.0', 'all' );	
+		}
 
-		function get_language_shortcode() {
+		function get_language_shortcode ( ) {
 		    return apply_filters( 'wpml_current_language', null );
 		}
 
@@ -233,6 +852,7 @@ if ( !class_exists( 'Store_Locations' ) ) {
 			
 			<table class="form-table" role="presentation">
 				<tbody>
+					<?php /*
 					<tr class="form-field form-required">
 						<th scope="row">
 							<label for="store_language">
@@ -258,6 +878,68 @@ if ( !class_exists( 'Store_Locations' ) ) {
 								</select>
 							<?php else : ?>
 								<input name="language_code" type="text" id="language_code" value="<?php echo $language_code; ?>">
+							<?php endif; ?>
+						</td>
+					</tr>
+					*/ ?>
+					<tr class="form-field form-required">
+						<th scope="row">
+							<label for="store_language">
+								<?php esc_html_e( 'Language', 'store-location' );?>
+							</label>
+						</th>
+						<td>
+							<!-- wpml language dropdown -->
+							<?php $language_code = get_post_meta( $post->ID, 'languages', true );?>
+							<?php if ( $this->is_wpml_active ( ) ) : ?>
+								<?php if ( function_exists ( 'icl_get_languages' ) ) : ?>
+									<?php 
+										$langs = icl_get_languages ( 'skip_missing=0' ); 
+										// var_dump_pre( $langs );
+
+										$language_code = explode( ',', get_post_meta ( $post->ID, 'languages', true ) );
+										// var_dump_pre( $language_code );
+									?>
+									<ul class="available-languages">
+										<?php foreach ( $langs as $lang ) : ?>
+											<li class="<?php if ( in_array ( $lang['language_code'], $language_code ) ) { echo '_active'; } ?>">
+												<label for="wpml-language-<?php echo $lang['language_code'];?>">
+													<input type="checkbox" name="languages[]" id="wpml-language-<?php echo $lang['language_code'];?>" value="<?php echo $lang['language_code']; ?>" <?php if ( in_array ( $lang['language_code'], $language_code ) ) { echo 'checked="checked"'; } ?>>
+													<img width="18" height="12" src="<?php echo $lang['country_flag_url']; ?>" alt="Flag for <?php echo $lang['language_code'];?>">
+													<?php echo $lang["native_name"]; ?> ( <?php echo $lang['language_code']; ?> )
+												</label>
+											</li>
+										<?php endforeach ?>
+									</ul>
+								<?php endif; ?>
+							<?php else : ?>
+								<?php if ( ! $this->is_wpml_active( ) ) : ?>
+									<?php  
+										$flags_dir_url = LOCATION_DIR_URI . 'images/flags/';
+
+										$active_languages = get_option( 'store-loc-active-languages' );
+										// var_dump_pre( $active_languages );
+
+										$active_languages_array = explode( ',', $active_languages );
+										// var_dump_pre( $active_languages_array );
+
+										$language_code = explode( ',', get_post_meta( $post->ID, 'languages', true ) );
+										// var_dump_pre( $language_code );
+
+									?>
+									<ul class="available-languages">
+										<?php foreach ( $this->flags_array as $value ) : ?>
+											<?php if ( ! in_array ( $value[0], $active_languages_array ) ) { continue; } ?>
+											<li class="<?php if ( in_array ( $value[0] , $language_code ) ) { echo '_active'; } ?>">
+												<label for="wpml-language-<?php echo $value[0];?>">
+													<input type="checkbox" name="languages[]" id="wpml-language-<?php echo $value[0];?>" value="<?php echo $value[0];?>" <?php if ( in_array ( $value[0] , $language_code ) ) { echo 'checked'; } ?>>
+													<img width="18" height="12" src="<?php echo $flags_dir_url.$value[1];?>" alt="Flag for <?php echo $value[0];?>">
+													<?php echo $value[2]; ?> ( <?php echo $value[0]; ?> )
+												</label>
+											</li>
+										<?php endforeach ?>
+									</ul>
+								<?php endif ?>	
 							<?php endif; ?>
 						</td>
 					</tr>
@@ -309,6 +991,30 @@ if ( !class_exists( 'Store_Locations' ) ) {
 						</th>
 						<td>
 							<input name="store_zipcode" type="text" id="store_zipcode" value="<?php echo get_post_meta( $post->ID, 'store_zipcode', true );?>">
+						</td>
+					</tr>
+					<tr class="form-field">
+						<th scope="row">
+							<label for="store_zipcode">
+								<?php esc_html_e( 'Country', 'store-location' );?> 
+							</label>
+						</th>
+						<td>
+							<?php  
+								$country = get_post_meta( $post->ID, 'country', true );
+								// var_dump_pre( $country );
+							?>
+							<select name="country" id="store-country">
+								<option value=""  <?php if ( in_array( $country, $this->country_list ) ) { echo 'selected'; } ?>>
+									Select Country
+								</option>
+								<?php foreach ( $this->country_list as $key => $value ) : ?>
+									<?php $key = strtolower ( $key ); ?>
+									<option value="<?php echo $key;?>" <?php if ( $key == $country ) { echo 'selected'; } ?> >
+										<?php echo $value; ?>
+									</option>
+								<?php endforeach ?>
+							</select>
 						</td>
 					</tr>
 					<tr class="form-field">
@@ -382,8 +1088,12 @@ if ( !class_exists( 'Store_Locations' ) ) {
 		
 		public function save_address_location( $post_id ){
 
-			// var_dump_pre( $_POST );die();
+			// var_dump_pre( $_POST );
+			// var_dump_pre( implode( ',', $_POST['languages'] ) );
+			// die();
 			update_post_meta( $post_id, 'language_code', 	strtolower( sanitize_text_field ( $_POST['language_code'] ) ) );
+			update_post_meta( $post_id, 'languages', 		implode( ',', $_POST['languages'] ) );
+			update_post_meta( $post_id, 'country', 			sanitize_text_field ( $_POST['country'] ) );
 			update_post_meta( $post_id, 'store_address', 	sanitize_text_field ( $_POST['store_address'] ) );
 			update_post_meta( $post_id, 'address_2', 		sanitize_text_field ( $_POST['address_2'] ) );
 			update_post_meta( $post_id, 'store_city', 		sanitize_text_field ( $_POST['store_city'] ) );
@@ -394,9 +1104,10 @@ if ( !class_exists( 'Store_Locations' ) ) {
 			update_post_meta( $post_id, 'website_url', 		sanitize_text_field ( $_POST['website_url'] ) );
 			update_post_meta( $post_id, 'phone_no', 		sanitize_text_field ( $_POST['phone_no'] ) );
 			update_post_meta( $post_id, 'provider_name', 	sanitize_text_field ( $_POST['provider_name'] ) );
+
 		}
 		
-		public function search_location_near( ) {
+		public function search_location_near ( ) {
 
 			$lat 		= ! empty( $_POST['pos_lat'] ) ? $_POST['pos_lat'] : '';
 			$lng 		= ! empty( $_POST['pos_lng'] ) ? $_POST['pos_lng'] : '';
@@ -406,11 +1117,11 @@ if ( !class_exists( 'Store_Locations' ) ) {
 			if ( ! empty( $lat ) && ! empty( $lng ) ) {
 				$locations = []; 
 				$locations_result = $this->get_nearby_locations( $lat, $lng, $lang,  DISTANCE_MILES );
-				if( !empty( $locations_result )){
-					foreach($locations_result as $loc){	
-						if( !empty( $lang )){
-							$language_code = get_post_meta( $loc['post_id'], 'language_code', true );
-							if( $language_code != $lang){
+				if( ! empty ( $locations_result ) ) {
+					foreach ( $locations_result as $loc ) {	
+						if ( !empty( $lang ) ) {
+							$language_code = explode ( ',', get_post_meta ( $loc['post_id'], 'languages', true ) );
+							if( ! in_array( $lang, $language_code ) ) {
 								continue;
 							}
 						}
@@ -444,9 +1155,9 @@ if ( !class_exists( 'Store_Locations' ) ) {
 				if ( $lang ) {
 					$args['meta_query'] = array(
 						array(
-							'key' 		=> 'language_code',
+							'key' 		=> 'languages',
 							'value' 	=> $lang,
-							'compare' 	=> '='
+							'compare' 	=> 'like'
 						),
 					);
 				}
@@ -751,5 +1462,161 @@ if ( !class_exists( 'Store_Locations' ) ) {
 			return array();
 		}
 
+		//****************************************************************************/
+		// Admin Custom Columns Languages and Country
+		//****************************************************************************/
+		public function columns_locations ( $columns ) {
+
+		    $columns['lang'] = 'Languages';
+		    $columns['country'] = 'Country';
+
+		    return $columns;
+		}
+
+		public function columns_locations_data ( $column, $post_id ) {
+		    switch( $column ) {
+		        case 'lang':
+			        $language_codes = get_post_meta ( $post_id, 'languages', true );
+		            // var_dump_pre( $language_codes ); 
+		        	if ( $language_codes ) {
+		        		// echo str_replace ( ',', ', ', $language_code );
+		        		$lang_array = explode( ',', $language_codes );
+		        		$res = array ( );
+		        		foreach ( $lang_array as  $value ) {
+			        		$res[] = $this->flags_array[trim( $value )][2] . ' (' . $value . ')';
+		        		}
+		        		echo implode( ', ', $res );
+		        	}
+		        	else{
+		        		echo '<span style="color:red">not set</span>';
+		        	}
+		        break;
+		        case 'country':
+			        $country = get_post_meta ( $post_id, 'country', true );
+		            // var_dump_pre( $country ); 
+		        	if ( $country ) {
+		        		echo $this->country_list[strtoupper( $country )];
+		        	}
+		        	else{
+		        		echo '<span style="color:red">not set</span>';
+		        	}
+		        break;
+		    }
+		}
+
+		//****************************************************************************/
+		// Admin Languages and Country filters for Location CPT
+		//****************************************************************************/
+		function load_custom_filter_wpse_94630( ) {
+
+		    global $typenow;
+
+		    // Adjust the Post Type
+		    if( 'locations' != $typenow )
+		        return;
+
+		    add_filter( 'posts_where' , [$this, 'posts_where_wpse_94630'] );
+		}
+
+		function posts_where_wpse_94630( $where ) {
+
+		    global $wpdb;       
+
+		    if ( isset( $_GET[ 'store-language' ] ) && !empty( $_GET[ 'store-language' ] ) ) {
+		        $meta = esc_sql( $_GET['store-language'] );
+		        $where .= " AND ID IN (SELECT post_id FROM $wpdb->postmeta WHERE meta_value LIKE '%$meta%' AND $wpdb->postmeta.meta_key = 'languages' )";
+		    }
+		    if ( isset( $_GET[ 'store-country' ] ) && !empty( $_GET[ 'store-country' ] ) ) {
+		        $meta = esc_sql( $_GET['store-country'] );
+		        if ( 'not-set' == $_GET[ 'store-country' ] ) {
+			        $where .= " AND ( 
+			        					NOT EXISTS (SELECT * FROM $wpdb->postmeta WHERE $wpdb->postmeta.meta_key = 'country' AND $wpdb->postmeta.post_id=$wpdb->posts.ID ) 
+			        					OR
+			        					ID IN (SELECT post_id FROM $wpdb->postmeta WHERE $wpdb->postmeta.meta_key = 'country' AND meta_value = ' ' )
+			        )";
+		        }
+		        else{
+			        $where .= " AND ID IN (SELECT post_id FROM $wpdb->postmeta WHERE meta_value LIKE '$meta' )";
+			        // $where .= " AND ID IN (SELECT post_id FROM $wpdb->postmeta WHERE $wpdb->postmeta.meta_key = 'country' AND meta_value = ' ' )";
+		        }
+		    }
+
+		    // var_dump_pre( $where );
+		    return $where;
+		}
+
+	    function wpse45436_admin_posts_filter_restrict_manage_posts ( $post_type ) {
+
+			global $wpdb, $post;
+
+			if ( 'locations' !== $post_type ) {
+				return;
+			}
+
+            // languages
+            $active_languages = get_option( 'store-loc-active-languages' );
+			// var_dump_pre( $active_languages );
+			
+			$active_languages_array = array ( );
+            if ( ! empty( $active_languages ) ) {
+				$active_languages_array = explode( ',', $active_languages );
+            }
+			// var_dump_pre( $active_languages_array );
+
+			// countries
+			$countries_res = $wpdb->get_results ( "SELECT DISTINCT meta_value FROM $wpdb->postmeta pm, $wpdb->posts p WHERE meta_key = 'country' and pm.post_id=p.ID  and p.post_type='locations' ", ARRAY_A );
+			// var_dump_pre( $countries_res );
+
+			if ( is_array ( $countries_res ) ){
+				$countries = array( 'not-set' );
+				foreach ( $countries_res as $value ) {
+					if ( !empty($value['meta_value']) ) {
+						$countries[] = $value['meta_value'];
+					}
+				}
+				// var_dump_pre( $countries );
+			}
+
+        ?>
+	        <?php if ( ! empty( $active_languages ) ) : ?>
+	            <select name="store-language">
+		            <option value="">
+		            	<?php _e( 'All Languages', 'store-location' ); ?>
+	            	</option>
+		            <?php $current_lang = isset( $_GET['store-language'] ) ? $_GET['store-language'] : ''; ?>
+	                <?php foreach ( $active_languages_array as $value ) : ?>
+	                	<?php 
+	                		$selected = $value == $current_lang ? ' selected="selected"' : '';
+	                		$language_label = $this->flags_array[$value];
+                		?>
+                        <option value="<?php echo $value ?>" <?php echo $selected ?> >
+	                		<?php echo $language_label[2]; ?> ( <?php echo $language_label[0]; ?> )
+                        </option>
+		            <?php endforeach; ?>
+	            </select>
+	        <?php endif ?> 
+	        <?php if ( is_array ( $countries ) ) : ?>
+	            <select name="store-country">
+		            <option value="">
+		            	<?php _e( 'All Countries', 'store-location' ); ?>
+	            	</option>
+		            <?php $current_country = isset( $_GET['store-country'] ) ? $_GET['store-country'] : ''; ?>
+	                <?php foreach ( $countries as $value ) : ?>
+	                	<?php $selected = $value == $current_country ? ' selected="selected"' : '' ?>
+	                	<?php if ( 'not-set' == $value ): ?>
+		                	<option value="not-set" <?php echo $selected ?> >
+	                        	Not Set
+	                        </option>
+	                	<?php else : ?>	
+	                        <option value="<?php echo $value ?>" <?php echo $selected ?> >
+	                        	<?php echo $this->country_list[strtoupper( $value )]; ?>
+	                        </option>
+	                	<?php endif ?>
+		            <?php endforeach; ?>
+	            </select>
+	        <?php endif ?>
+
+            <?php
+	    }
 	} 
 }

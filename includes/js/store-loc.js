@@ -1,10 +1,13 @@
 jQuery(document).ready(function($) {
 	
+	$( '.store-search-form' ).submit( function( e ) {
+		console.log( 'search' )
+		e.preventDefault( );
+	})
 	jQuery(document).on('click', '.store-location-btn', function(event){
+
 		event.preventDefault();
-		$( '.store-search-form' ).submit( function( e ) {
-			e.preventDefault( );
-		})
+
 		var box_id = $(this).data('id');
 		var lat = $(this).data('lat');
 		var lng = $(this).data('lng');							
@@ -20,7 +23,7 @@ jQuery(document).ready(function($) {
 		//console.log('pid:'+box_id);
 	});
 	
-	$('#location_search_form').submit(function(e){
+	$( '#location_search_form' ).submit( function(e){
 		e.preventDefault();
 		search_location_near_by();
 		return false;
@@ -93,7 +96,7 @@ function initgMap() {
 			const place = autocomplete.getPlace();
 		
 			if (!place.geometry || !place.geometry.location) {
-				alert("No details available for input: '" + place.name + "'");
+				// alert("No details available for input: '" + place.name + "'");
 				return;
 			}
 			reset_zoom = true;
@@ -117,7 +120,7 @@ function initgMap() {
 			const place = autocomplete.getPlace();
 		
 			if (!place.geometry || !place.geometry.location) {
-			  alert("No details available for input: '" + place.name + "'");
+			  // alert("No details available for input: '" + place.name + "'");
 			  return;
 			}
 			reset_zoom = true;
