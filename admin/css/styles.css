@@ -1,0 +1,25 @@
+.available-languages {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    justify-content: flex-start;
+    align-items: flex-start;
+}
+.available-languages li {
+    width: 230px;
+    padding: 4px 5px;
+    margin-bottom: 0;
+    margin-right: 10px;
+}
+.available-languages li._active {
+    background: #fefefe;
+}
+#store_location_box_id .available-languages li._active {
+    background: #efefef;
+}
+.available-languages li label {
+    width: 100%;
+    display: block;
+    margin-bottom: 0;
+}
