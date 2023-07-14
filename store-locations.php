@@ -6,18 +6,15 @@
 
  *	Description: An easy to use store locations management system that give users to search for stores. [store-locations]
 
- *	Version: 2.2.3
+ *	Version: 2.2
  */
 
-define( 'LOCATION_PLUGIN_VERSION', '2.2.3' );
 
-define( 'LOCATION_DIR_URI', 		plugin_dir_url( __FILE__ ) );
-define( 'LOCATION_PLUGIN_DIR', 		plugin_dir_path( __FILE__ ) );
 
-define( 'LOCATION_PLUGIN_SLUG', 	plugin_basename( __DIR__ ) );
-define( 'LOCATION_PLUGIN_FILE', 	plugin_basename( __FILE__ ) );
+define( 'LOCATION_DIR_URI', plugin_dir_url( __FILE__ ));
+define( 'LOCATION_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
+define( 'DISTANCE_MILES', 50);
 
-define( 'DISTANCE_MILES', 50 );
 
 /**
  * Plugin page links

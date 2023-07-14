@@ -190,7 +190,6 @@ function search_location_near_by(){
 			
 	},
 	}).done(function(response){ //							
-		
 		if(response.status){ 
 			console.log('FOUND');
 			var s_locations = [];

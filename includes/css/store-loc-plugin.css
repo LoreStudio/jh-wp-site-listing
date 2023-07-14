@@ -213,6 +213,7 @@
 
 .store-locations-search{
 	width:100%;
+    padding: 4px 20px;
 }
 
 .store-locations-search .pac-target-input, .store-locations-search .pac-target-input:focus{
@@ -256,7 +257,8 @@
     font-size: 16px;
     line-height: 125%;
     margin: 0 0 20px;
-    padding: 0;
+    padding: 4px 20px;
+    font-style: italic;
 }
 
 

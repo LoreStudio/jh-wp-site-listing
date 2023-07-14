@@ -611,14 +611,7 @@ if ( !class_exists( 'Store_Locations' ) ) {
 			)
 		);
 
-		// plugin auto update vars
-		public $plugin_slug;
-		public $version;
-		public $cache_key;
-		public $cache_allowed;
-		public $location_plugin_json_file = 'https://jumotemplate1a.wpengine.com/wp-content/uploads/update-location-plugin/info.json';
-
-		public function __construct ( ) {
+		public function __construct ( ) {	
 			
 			if( 'yes' == esc_attr( get_option( 'show_direction_link' ) ) ){
 				$this->show_direction = true;
@@ -639,26 +632,16 @@ if ( !class_exists( 'Store_Locations' ) ) {
 			add_action( 'add_meta_boxes', 			[$this, 'address_location_custom_box'] );
 			add_action( 'save_post_locations', 		[$this, 'save_address_location'] );
 
-			add_action( 'wp_ajax_search_location_near', 		[$this, 'search_location_near'] );
-			add_action( 'wp_ajax_nopriv_search_location_near', 	[$this, 'search_location_near'] );
+			add_action( 'wp_ajax_search_location_near', [ $this, 'search_location_near'] );
+			add_action( 'wp_ajax_nopriv_search_location_near', [ $this, 'search_location_near'] );
 
-			add_filter( 'manage_locations_posts_columns', 		[$this, 'columns_locations'] );
+			add_filter( 'manage_locations_posts_columns', [$this, 'columns_locations'] );
 			add_action( 'manage_locations_posts_custom_column', [$this, 'columns_locations_data'], 10, 2 );
 
-			add_action( 'load-edit.php', 						[$this, 'load_custom_filter_wpse_94630'] );
-			add_action( 'restrict_manage_posts', 				[$this, 'wpse45436_admin_posts_filter_restrict_manage_posts'], 10, 1 );
+			add_action( 'load-edit.php', 			[$this, 'load_custom_filter_wpse_94630'] );
+			add_action( 'restrict_manage_posts', 	[$this, 'wpse45436_admin_posts_filter_restrict_manage_posts'], 10, 1 );
 
-			// plugin auto update functions
-			$this->version 			= LOCATION_PLUGIN_VERSION;
-			$this->plugin_slug 		= LOCATION_PLUGIN_SLUG;
-			$this->plugin_file 		= LOCATION_PLUGIN_FILE;
-			$this->cache_key 		= 'location_plugin_custom_upd';
-			$this->cache_allowed 	= false;
-
-			add_filter( 'plugins_api', 									[$this, 'update_plugin__info'], 20, 3 );
-			add_filter( 'site_transient_update_plugins', 				[$this, 'update_plugin__update'] );
-			add_action( 'upgrader_process_complete', 					[$this, 'update_plugin__purge'], 10, 2 );
-
+			
 		}
 		// front end enque scripts
 		public function store_locations_scripts ( ) {
@@ -1089,6 +1072,16 @@ if ( !class_exists( 'Store_Locations' ) ) {
 					</tr>
 					<tr class="form-field">
 						<th scope="row">
+							<label for="email">
+								<?php esc_html_e('Email', 'store-location' );?>
+							</label>
+						</th>
+						<td>
+							<input name="email" type="text" id="email"  value="<?php echo get_post_meta( $post->ID, 'email', true );?>">
+						</td>
+					</tr>
+					<tr class="form-field">
+						<th scope="row">
 							<label for="provider_name">
 								<?php esc_html_e('Provider Name', 'store-location' );?>
 							</label>
@@ -1108,73 +1101,21 @@ if ( !class_exists( 'Store_Locations' ) ) {
 			// var_dump_pre( $_POST );
 			// var_dump_pre( implode( ',', $_POST['languages'] ) );
 			// die();
-			
-			if ( isset ( $_POST['languages'] ) && ! empty ( $_POST['languages'] ) ) {
-				if ( is_array( $_POST['languages'] ) ) {
-					update_post_meta( $post_id, 'languages', 	implode( ',', $_POST['languages'] ) );
-				}
-				else{
-					update_post_meta( $post_id, 'languages', 	'' );
-				}
-			}
+			update_post_meta( $post_id, 'language_code', 	strtolower( sanitize_text_field ( $_POST['language_code'] ) ) );
+			update_post_meta( $post_id, 'languages', 		implode( ',', (array)$_POST['languages'] ) );
+			update_post_meta( $post_id, 'country', 			sanitize_text_field ( $_POST['country'] ) );
+			update_post_meta( $post_id, 'store_address', 	sanitize_text_field ( $_POST['store_address'] ) );
+			update_post_meta( $post_id, 'address_2', 		sanitize_text_field ( $_POST['address_2'] ) );
+			update_post_meta( $post_id, 'store_city', 		sanitize_text_field ( $_POST['store_city'] ) );
+			update_post_meta( $post_id, 'store_state', 		sanitize_text_field ( $_POST['store_state'] ) );
+			update_post_meta( $post_id, 'store_zipcode',	sanitize_text_field ( $_POST['store_zipcode'] ) );
+			update_post_meta( $post_id, 'map_lat', 			$_POST['map_lat'] );
+			update_post_meta( $post_id, 'map_lng', 			$_POST['map_lng'] );
+			update_post_meta( $post_id, 'website_url', 		sanitize_text_field ( $_POST['website_url'] ) );
+			update_post_meta( $post_id, 'phone_no', 		sanitize_text_field ( $_POST['phone_no'] ) );
+			update_post_meta( $post_id, 'email', 		    sanitize_text_field ( $_POST['email'] ) );
+			update_post_meta( $post_id, 'provider_name', 	sanitize_text_field ( $_POST['provider_name'] ) );
 
-			if ( isset ( $_POST['map_lat'] ) && ! empty ( $_POST['map_lat'] ) ) {
-				update_post_meta( $post_id, 'map_lat', $_POST['map_lat'] );
-			}
-			if ( isset ( $_POST['map_lng'] ) && ! empty ( $_POST['map_lng'] ) ) {
-				update_post_meta( $post_id, 'map_lng', $_POST['map_lng'] );
-			}
-
-			// if ( isset ( $_POST['language_code'] ) && ! empty ( $_POST['language_code'] ) ) {
-			// 	$language_code = strtolower( sanitize_text_field ( $_POST['language_code'] ) );
-			// 	update_post_meta( $post_id, 'language_code', $language_code );
-			// }
-			// if ( isset ( $_POST['country'] ) && ! empty ( $_POST['country'] ) ) {
-			// 	update_post_meta( $post_id, 'country', sanitize_text_field ( $_POST['country'] ) );
-			// }
-			// if ( isset ( $_POST['store_address'] ) && ! empty ( $_POST['store_address'] ) ) {
-			// 	update_post_meta( $post_id, 'store_address', sanitize_text_field ( $_POST['store_address'] ) );
-			// }
-			// if ( isset ( $_POST['address_2'] ) && ! empty ( $_POST['address_2'] ) ) {
-			// 	update_post_meta( $post_id, 'address_2', sanitize_text_field ( $_POST['address_2'] ) );
-			// }
-			// if ( isset ( $_POST['store_city'] ) && ! empty ( $_POST['store_city'] ) ) {
-			// 	update_post_meta( $post_id, 'store_city', sanitize_text_field ( $_POST['store_city'] ) );
-			// }
-			// if ( isset ( $_POST['store_state'] ) && ! empty ( $_POST['store_state'] ) ) {
-			// 	update_post_meta( $post_id, 'store_state', sanitize_text_field ( $_POST['store_state'] ) );
-			// }
-			// if ( isset ( $_POST['store_zipcode'] ) && ! empty ( $_POST['store_zipcode'] ) ) {
-			// 	update_post_meta( $post_id, 'store_zipcode', sanitize_text_field ( $_POST['store_zipcode'] ) );
-			// }
-			// if ( isset ( $_POST['website_url'] ) && ! empty ( $_POST['website_url'] ) ) {
-			// 	update_post_meta( $post_id, 'website_url', sanitize_text_field ( $_POST['website_url'] ) );
-			// }
-			// if ( isset ( $_POST['phone_no'] ) && ! empty ( $_POST['phone_no'] ) ) {
-			// 	update_post_meta( $post_id, 'phone_no', sanitize_text_field ( $_POST['phone_no'] ) );
-			// }
-			// if ( isset ( $_POST['provider_name'] ) && ! empty ( $_POST['provider_name'] ) ) {
-			// 	update_post_meta( $post_id, 'provider_name', sanitize_text_field ( $_POST['provider_name'] ) );
-			// }
-
-			$vars_array__text = array (
-				'language_code',
-				'country',
-				'store_address',
-				'address_2',
-				'store_city',
-				'store_state',
-				'store_zipcode',
-				'website_url',
-				'phone_no',
-				'provider_name',
-			);
-
-			foreach ( $vars_array__text as $value ) {
-				if ( isset ( $_POST[$value] ) && ! empty ( $_POST[$value] ) ) {
-					update_post_meta( $post_id, $value, sanitize_text_field ( $_POST[$value] ) );
-				}
-			}
 		}
 		
 		public function search_location_near ( ) {
@@ -1320,6 +1261,7 @@ if ( !class_exists( 'Store_Locations' ) ) {
 					$directions = $address ? $address : $lat . ',' . $lng;
 					
 					$phone = ( get_post_meta( $loc_id, "phone_no", true ) ) ? get_post_meta( $loc_id, "phone_no", true ) : '';
+					$email = ( get_post_meta( $loc_id, "email", true ) ) ? get_post_meta( $loc_id, "email", true ) : '';
 					$provider_name = ( get_post_meta( $loc_id, "provider_name",  true ) ) ? get_post_meta( $loc_id, "provider_name", true ) : '';
 					$response_loc[] = array(
 						'ID'				=> $i,
@@ -1328,6 +1270,7 @@ if ( !class_exists( 'Store_Locations' ) ) {
 						'latitude' 			=> $lat,
 						'longitude' 		=> $lng,
 						'phone' 			=> $phone,
+						'email' 			=> $email,
 						'show_direction'	=> $this->show_direction,
 						'provider_name'		=> $provider_name,
 						'direction'			=> __( 'Get directions', 'store-location' )
@@ -1355,6 +1298,7 @@ if ( !class_exists( 'Store_Locations' ) ) {
 						}
 						$loc_id 		= $location['post_id'];					
 						$phone 			= ( get_post_meta ( $loc_id, "phone_no", true ) ) ? get_post_meta ( $loc_id, "phone_no", true ) : '';
+						$email 			= ( get_post_meta ( $loc_id, "email", true ) ) ? get_post_meta ( $loc_id, "email", true ) : '';
 						$provider_name 	= ( get_post_meta ( $loc_id, "provider_name", true ) ) ? get_post_meta ( $loc_id, "provider_name", true ) : '';
 						
 						$address 		= '';
@@ -1453,6 +1397,11 @@ if ( !class_exists( 'Store_Locations' ) ) {
 													<div class="uncont">
 														<div class="uncode_text_column">
 															<p>
+																<?php if ( ! empty( $email ) ) : ?>
+																	<a href="mailto:<?php echo esc_html( $email ); ?>">
+																		<?php echo esc_html( $email ); ?>
+																	</a><br/>
+																<?php endif; ?>
 															  	<?php if ( ! empty( $phone ) ) : ?>
 																  	<a href="tel:<?php echo preg_replace("/[^0-9]/", "", $phone)?>">
 																		<?php echo $phone;?>
@@ -1490,6 +1439,13 @@ if ( !class_exists( 'Store_Locations' ) ) {
 								<div class="store-location-phone">
 									<a href="tel:<?php echo $phone;?>">
 										<?php echo $phone;?>
+									</a>
+								</div>
+							<?php endif; ?>
+							<?php if ( ! empty ( $email ) ) : ?>
+								<div class="store-location-email">
+									<a href="mail-to:<?php echo esc_html( $email ); ?>">
+										<?php echo esc_html( $email ); ?>
 									</a>
 								</div>
 							<?php endif; ?>
@@ -1688,142 +1644,5 @@ if ( !class_exists( 'Store_Locations' ) ) {
 
             <?php
 	    }
-
-
-		//****************************************************************************/
-		// Auto Update Plugin
-		//****************************************************************************/
-	   
-		public function update_plugin__info ( $res, $action, $args ) {
-
-			// var_dump_pre( 'update_plugin__info' );
-			// var_dump_pre( $action );
-			// var_dump_pre( $args );
-
-			// do nothing if you're not getting plugin information right now
-			if( 'plugin_information' !== $action ) {
-				return $res;
-			}
-
-			// do nothing if it is not our plugin
-			if( $this->plugin_slug !== $args->slug ) {
-				return $res;
-			}
-
-			// get updates
-			$remote = $this->update_plugin__request();
-
-			if( ! $remote ) {
-				return $res;
-			}
-
-			$res = new stdClass();
-
-			$res->name = $remote->name;
-			$res->slug = $remote->slug;
-			$res->version = $remote->version;
-			$res->tested = $remote->tested;
-			$res->requires = $remote->requires;
-			$res->author = $remote->author;
-			$res->author_profile = $remote->author_profile;
-			$res->download_link = $remote->download_url;
-			$res->trunk = $remote->download_url;
-			$res->requires_php = $remote->requires_php;
-			$res->last_updated = $remote->last_updated;
-
-			$res->sections = array(
-				'description' => $remote->sections->description,
-				'installation' => $remote->sections->installation,
-				'changelog' => $remote->sections->changelog
-			);
-
-			if( ! empty( $remote->banners ) ) {
-				$res->banners = array(
-					'low' => $remote->banners->low,
-					'high' => $remote->banners->high
-				);
-			}
-			// var_dump_pre( $res );
-			return $res;
-		}
-
-		public function update_plugin__update ( $transient ) {
-
-			// var_dump_pre( 'update_plugin__update' );
-			// var_dump_pre( $transient );
-			// var_dump_pre( empty( $transient->checked ) );
-			// var_dump_pre( empty( $transient->checked ) );
-
-			if ( empty( $transient->checked ) ) {
-				return $transient;
-			}
-
-			$remote = $this->update_plugin__request ( );
-
-			if(
-				$remote
-				&& version_compare( $this->version, $remote->version, '<' )
-				&& version_compare( $remote->requires, get_bloginfo( 'version' ), '<=' )
-				&& version_compare( $remote->requires_php, PHP_VERSION, '<' )
-			) {
-				$res = new stdClass();
-				$res->slug = $this->plugin_slug;
-				$res->plugin = $this->plugin_file; // misha-update-plugin/misha-update-plugin.php
-				$res->new_version = $remote->version;
-				$res->tested = $remote->tested;
-				$res->package = $remote->download_url;
-
-				$transient->response[ $res->plugin ] = $res;
-		    }
-
-			return $transient;
-		}
-
-		public function update_plugin__purge ( $upgrader, $options ){
-
-			if (
-				$this->cache_allowed
-				&& 'update' === $options['action']
-				&& 'plugin' === $options['type']
-			) {
-				// just clean the cache when new plugin version is installed
-				delete_transient( $this->cache_key );
-			}
-		} 
-
-		public function update_plugin__request ( ) {
-
-			$remote = get_transient ( $this->cache_key );
-
-			if( false === $remote || ! $this->cache_allowed ) {
-
-				$remote = wp_remote_get (
-					$this->location_plugin_json_file,
-					array(
-						'timeout' => 10,
-						'headers' => array(
-							'Accept' => 'application/json'
-						)
-					)
-				);
-
-				if(
-					is_wp_error ( $remote )
-					|| 200 !== wp_remote_retrieve_response_code ( $remote )
-					|| empty( wp_remote_retrieve_body ( $remote ) )
-				) {
-					return false;
-				}
-
-				set_transient ( $this->cache_key, $remote, DAY_IN_SECONDS );
-
-			}
-
-			$remote = json_decode ( wp_remote_retrieve_body ( $remote ) );
-			// var_dump_pre( $remote );
-
-			return $remote;
-		}
-
 	} 
 }
