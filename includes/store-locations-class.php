@@ -623,7 +623,7 @@ if ( !class_exists( 'Store_Locations' ) ) {
 			}
 
 			$this->plugin_slug   = plugin_basename( __DIR__ );
-			$this->version       = '2.3';
+			$this->version       = '2.2.4';
 			$this->cache_key     = 'store-locations';
 			$this->cache_allowed = false;
 			
@@ -1711,14 +1711,8 @@ if ( !class_exists( 'Store_Locations' ) ) {
 			$response->name           = $remote->name;
 			$response->slug           = $remote->slug;
 			$response->version        = $remote->version;
-			$response->tested         = $remote->tested;
-			$response->requires       = $remote->requires;
-			$response->author         = $remote->author;
-			$response->author_profile = $remote->author_profile;
-			$response->homepage       = $remote->homepage;
 			$response->download_link  = $remote->download_url;
 			$response->trunk          = $remote->download_url;
-			$response->requires_php   = $remote->requires_php;
 			$response->last_updated   = $remote->last_updated;
 			
 			$response->sections = [
@@ -1740,12 +1734,11 @@ if ( !class_exists( 'Store_Locations' ) ) {
 		
 			$remote = $this->update_request();
 		
-			if ( $remote && version_compare( $this->version, $remote->version, '<' ) && version_compare( $remote->requires, get_bloginfo( 'version' ), '<=' ) && version_compare( $remote->requires_php, PHP_VERSION, '<' ) ) {
+			if ( $remote && version_compare( $this->version, $remote->version, '<' ) ) {
 			    $response              = new \stdClass();
 			    $response->slug        = $this->plugin_slug;
 			    $response->plugin      = "{$this->plugin_slug}/{$this->plugin_slug}.php";
 			    $response->new_version = $remote->version;
-			    $response->tested      = $remote->tested;
 			    $response->package     = $remote->download_url;
 			
 			    $transient->response[ $response->plugin ] = $response;
