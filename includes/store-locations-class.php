@@ -623,7 +623,7 @@ if ( !class_exists( 'Store_Locations' ) ) {
 			}
 
 			$this->plugin_slug   = plugin_basename( __DIR__ );
-			$this->version       = '2.2.4';
+			$this->version       = LOCATION_PLUGIN_VERSION;
 			$this->cache_key     = 'store-locations';
 			$this->cache_allowed = false;
 			
@@ -1666,7 +1666,7 @@ if ( !class_exists( 'Store_Locations' ) ) {
 			
 			if( false === $remote || ! $this->cache_allowed ) {
 			
-				$remote = wp_remote_get( 'https://raw.githubusercontent.com/LoreStudio/jh-wp-site-listing/plugin-updater-feature/store-locations-info.json', [
+				$remote = wp_remote_get( 'https://raw.githubusercontent.com/LoreStudio/jh-wp-site-listing/store-locations-info.json', [
 					'timeout' => 10,
 			    		'headers' => [
 						'Accept' => 'application/json'
@@ -1677,7 +1677,7 @@ if ( !class_exists( 'Store_Locations' ) ) {
 					return false;
 				}
 			
-				set_transient( $this->cache_key, $remote, HOUR_IN_SECONDS );
+				set_transient( $this->cache_key, $remote, 12 * HOUR_IN_SECONDS );
 			
 			}
 			
