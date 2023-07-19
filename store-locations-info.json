@@ -1,12 +1,12 @@
 {
 	"name" : "Store Locations",
 	"slug" : "store-locations",
-	"version" : "2.2.4",
+	"version" : "2.3",
 	"download_url" : "https://github.com/LoreStudio/jh-wp-site-listing/archive/refs/heads/main.zip",
 	"last_updated" : "2023-07-18 00:00:00",
 	"sections" : {
 		"description" : "An easy to use store locations management system that give users to search for stores. [store-locations]",
 		"installation" : "Install zip file and click activate",
-		"changelog" : "<h4>v2.2.4 released on July 18th, 2023</h4><ul><li>Add automatic updater</li></ul>"
+		"changelog" : "<h4>v2.3 released on July 18th, 2023</h4><ul><li>Add automatic updater</li></ul>"
 	}
 }
