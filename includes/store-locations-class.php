@@ -11,6 +11,11 @@ if ( !class_exists( 'Store_Locations' ) ) {
 
 		var $show_direction = false;
 
+		public $plugin_slug;
+		public $version;
+		public $cache_key;
+		public $cache_allowed;
+		
 		var $country_list = array(
 			"AF" => "Afghanistan",
 			"AL" => "Albania",
@@ -616,6 +621,12 @@ if ( !class_exists( 'Store_Locations' ) ) {
 			if( 'yes' == esc_attr( get_option( 'show_direction_link' ) ) ){
 				$this->show_direction = true;
 			}
+
+			$this->plugin_slug   = plugin_basename( __DIR__ );
+			$this->version       = LOCATION_PLUGIN_VERSION;
+			$this->cache_key     = 'store-locations';
+			$this->cache_allowed = false;
+			
 			add_action( 'init',              		[$this, 'location_register_post_types'] );
 
 			add_action( 'admin_enqueue_scripts', 	[$this, 'admin_store_locations_scripts'] );
@@ -640,6 +651,11 @@ if ( !class_exists( 'Store_Locations' ) ) {
 
 			add_action( 'load-edit.php', 			[$this, 'load_custom_filter_wpse_94630'] );
 			add_action( 'restrict_manage_posts', 	[$this, 'wpse45436_admin_posts_filter_restrict_manage_posts'], 10, 1 );
+
+			//Update functions
+			add_filter( 'plugins_api', [ $this, 'update_info' ], 20, 3 );
+			add_filter( 'site_transient_update_plugins', [ $this, 'plugin_update' ] );
+			add_action( 'upgrader_process_complete', [ $this, 'update_purge' ], 10, 2 );
 
 			
 		}
@@ -1644,5 +1660,99 @@ if ( !class_exists( 'Store_Locations' ) ) {
 
             <?php
 	    }
+		public function update_request() {
+		
+			$remote = get_transient( $this->cache_key );
+			
+			if( false === $remote || ! $this->cache_allowed ) {
+			
+				$remote = wp_remote_get( 'https://raw.githubusercontent.com/LoreStudio/jh-wp-site-listing/store-locations-info.json', [
+					'timeout' => 10,
+			    		'headers' => [
+						'Accept' => 'application/json'
+			    		]
+				  ]);
+			
+				if ( is_wp_error( $remote ) || 200 !== wp_remote_retrieve_response_code( $remote ) || empty( wp_remote_retrieve_body( $remote ) ) ) {
+					return false;
+				}
+			
+				set_transient( $this->cache_key, $remote, 12 * HOUR_IN_SECONDS );
+			
+			}
+			
+			$remote = json_decode( wp_remote_retrieve_body( $remote ) );
+			
+			return $remote;
+		
+		}	
+
+		function update_info( $response, $action, $args ) {
+		
+			// do nothing if you're not getting plugin information right now
+			if ( 'plugin_information' !== $action ) {
+			    return $response;
+			}
+			
+			// do nothing if it is not our plugin
+			if ( empty( $args->slug ) || $this->plugin_slug !== $args->slug ) {
+			    return $response;
+			}
+			
+			// get updates
+			$remote = $this->update_request();
+			
+			if ( ! $remote ) {
+			    return $response;
+			}
+			
+			$response = new \stdClass();
+			
+			$response->name           = $remote->name;
+			$response->slug           = $remote->slug;
+			$response->version        = $remote->version;
+			$response->download_link  = $remote->download_url;
+			$response->trunk          = $remote->download_url;
+			$response->last_updated   = $remote->last_updated;
+			
+			$response->sections = [
+			    'description'  => $remote->sections->description,
+			    'installation' => $remote->sections->installation,
+			    'changelog'    => $remote->sections->changelog
+			];
+			
+			
+			return $response;
+		
+		}
+
+		public function plugin_update( $transient ) {
+		
+			if ( empty($transient->checked ) ) {
+			    return $transient;
+			}
+		
+			$remote = $this->update_request();
+		
+			if ( $remote && version_compare( $this->version, $remote->version, '<' ) ) {
+			    $response              = new \stdClass();
+			    $response->slug        = $this->plugin_slug;
+			    $response->plugin      = "{$this->plugin_slug}/{$this->plugin_slug}.php";
+			    $response->new_version = $remote->version;
+			    $response->package     = $remote->download_url;
+			
+			    $transient->response[ $response->plugin ] = $response;
+			
+			}
+		
+			return $transient;		
+		}
+		
+		public function update_purge( $upgrader, $options ) {		
+			if ( $this->cache_allowed && 'update' === $options['action'] && 'plugin' === $options[ 'type' ] ) {
+		    		// clean the cache when new plugin version is installed
+		    		delete_transient( $this->cache_key );
+			}		
+		}
 	} 
 }
