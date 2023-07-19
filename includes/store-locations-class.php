@@ -1737,7 +1737,7 @@ if ( !class_exists( 'Store_Locations' ) ) {
 			if ( $remote && version_compare( $this->version, $remote->version, '<' ) ) {
 			    $response              = new \stdClass();
 			    $response->slug        = $this->plugin_slug;
-			    $response->plugin      = "jh-wp-site-listing/store-locations.php";
+			    $response->plugin      = "jh-wp-site-listing-main/store-locations.php";
 			    $response->new_version = $remote->version;
 			    $response->package     = $remote->download_url;
 			
