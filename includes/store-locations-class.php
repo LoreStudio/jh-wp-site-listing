@@ -1666,7 +1666,7 @@ if ( !class_exists( 'Store_Locations' ) ) {
 			
 			if( false === $remote || ! $this->cache_allowed ) {
 			
-				$remote = wp_remote_get( 'https://raw.githubusercontent.com/LoreStudio/jh-wp-site-listing/store-locations-info.json', [
+				$remote = wp_remote_get( 'https://raw.githubusercontent.com/LoreStudio/jh-wp-site-listing/main/store-locations-info.json', [
 					'timeout' => 10,
 			    		'headers' => [
 						'Accept' => 'application/json'
@@ -1737,7 +1737,7 @@ if ( !class_exists( 'Store_Locations' ) ) {
 			if ( $remote && version_compare( $this->version, $remote->version, '<' ) ) {
 			    $response              = new \stdClass();
 			    $response->slug        = $this->plugin_slug;
-			    $response->plugin      = "{$this->plugin_slug}/{$this->plugin_slug}.php";
+			    $response->plugin      = "jh-wp-site-listing/store-locations.php";
 			    $response->new_version = $remote->version;
 			    $response->package     = $remote->download_url;
 			
