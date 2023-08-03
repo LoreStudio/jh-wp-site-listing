@@ -6,7 +6,7 @@
 
  *	Description: An easy to use store locations management system that give users to search for stores. [store-locations]
 
- *	Version: 2.3
+ *	Version: 2.4
  */
 
 
