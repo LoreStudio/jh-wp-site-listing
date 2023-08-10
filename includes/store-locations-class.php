@@ -657,7 +657,8 @@ if ( !class_exists( 'Store_Locations' ) ) {
 			add_filter( 'site_transient_update_plugins', [ $this, 'plugin_update' ] );
 			add_action( 'upgrader_process_complete', [ $this, 'update_purge' ], 10, 2 );
 
-			
+			// Import Page
+			add_action( 'admin_menu', [$this, 'location_import_page'] );
 		}
 		// front end enque scripts
 		public function store_locations_scripts ( ) {
@@ -1754,5 +1755,90 @@ if ( !class_exists( 'Store_Locations' ) ) {
 		    		delete_transient( $this->cache_key );
 			}		
 		}
+		function location_import_page() {
+			    add_submenu_page(
+				'edit.php?post_type=locations',
+				__( 'Import Locations', 'textdomain' ),
+				__( 'Import Locations', 'textdomain' ),
+				'manage_options',
+				'import-location',
+				[$this,'location_import_page_html'],
+			);
+		} // end of upload page
+		
+		function location_import_page_html() {
+		?>
+			<div class="wrap">
+				<h1>Import Locations</h1>
+				<?php 			
+					if ( isset($_POST['action_type'] ) && $_POST['action_type'] == 'location_upload_csv' )  {
+						    if(($file = fopen($_FILES['filename']['tmp_name'], "r")) !== FALSE ){        
+        						$header = fgetcsv($file);
+        				    	while (($line = fgetcsv($file)) !== FALSE) {
+                    				$line = array_combine($header,$line);
+							        if($line["title"] != '') {
+										$title = ($line["title"]) ? $line["title"] : "";
+										$address1 = ($line["address1"]) ? $line["address1"] : "";
+										$address2 = ($line["address2"]) ? $line["address2"] : "";
+										$city = ($line["city"]) ? $line["city"] : "";
+										$state = ($line["state"]) ? $line["state"] : "";
+										$zip = ($line["zip_code"]) ? $line["zip_code"] : "";
+										$country = ($line["country"]) ? $line["country"] : "";  // Always should be lowercase and 2 letters representing country
+										$website = ($line["website"]) ? $line["website"] : ""; 
+										$phone = ($line["phone"]) ? $line["phone"] : ""; 
+										$email = ($line["email"]) ? $line["email"] : ""; 
+										$provider_name = ($line["provider_name"]) ? $line["provider_name"] : ""; 
+										
+								/* Data that can be used for debugging upload		
+										echo $title . "<br />";
+										echo $address1 . $address2 . "<br />";
+										echo $city . "<br />";
+										echo $state . "<br />";
+										echo $zip . "<br />";
+										echo $country . "<br />";
+										echo $website . "<br />";
+										echo $phone . "<br />";
+										echo $email . "<br />";
+										echo $provider_name . "<br />";
+								*/
+										
+										$post_id = wp_insert_post(array(
+										  'post_title'=> $title, 
+										  'post_type'=> 'locations', 
+										  'post_content'=>''
+										));										
+										if($post_id) {
+											update_post_meta( $post_id, 'language_code', 	'en' );
+											update_post_meta( $post_id, 'languages', 		'en' );											
+											update_post_meta( $post_id, 'country', 			sanitize_text_field ( $country ) );
+											update_post_meta( $post_id, 'store_address', 	sanitize_text_field ( $address1 ) );
+											update_post_meta( $post_id, 'address_2', 		sanitize_text_field ( $address2 ) );
+											update_post_meta( $post_id, 'store_city', 		sanitize_text_field ( $city ) );
+											update_post_meta( $post_id, 'store_state', 		sanitize_text_field ( $state ) );
+											update_post_meta( $post_id, 'store_zipcode',	sanitize_text_field ( $zip ) );
+											update_post_meta( $post_id, 'website_url', 		sanitize_text_field ( $website ) );
+											update_post_meta( $post_id, 'phone_no', 		sanitize_text_field ( $phone ) );
+											update_post_meta( $post_id, 'email', 		    sanitize_text_field ( $email ) );
+											update_post_meta( $post_id, 'provider_name', 	sanitize_text_field ( $provider_name ) );										
+										}										
+									}
+								}
+								echo "<h4 style='color:green;'>Upload Complete!</h4>";
+							} else {
+								echo "<h4 style='color:red;'>Please upload a valid file.</h4>";
+							}
+					} 			
+				?>				
+				<h3> Choose a file and then click submit below to add file data to database </h3>
+				<form method="POST" enctype='multipart/form-data'>					
+					<input type="hidden" name="action_type" value="location_upload_csv">
+					<label for="myfile">Select File:</label> 
+					<input type="file" class="filestyle" name="filename" data-iconName="glyphicon-inbox" accept=".csv" required> <br />
+					<button style="margin-top:20px;"> Submit </button>
+				</form>
+						
+			</div>
+		<?php						
+		} // End of Location import page callback		
 	} 
 }
