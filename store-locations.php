@@ -2,15 +2,15 @@
 
 /**
 
- *	Plugin Name: Store Locations
+ *	Plugin Name: Study Site Listings
 
- *	Description: An easy to use store locations management system that give users to search for stores. [store-locations]
+ *	Description: A custom locations management system, that allows patients to search and view participating study sites near them. [store-locations map=yes]
 
- *	Version: 2.5
+ *	Version: 2.6
  */
 
 
-define( 'LOCATION_PLUGIN_VERSION', '2.5' );
+define( 'LOCATION_PLUGIN_VERSION', '2.6' );
 define( 'LOCATION_DIR_URI', plugin_dir_url( __FILE__ ));
 define( 'LOCATION_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'DISTANCE_MILES', 50);
