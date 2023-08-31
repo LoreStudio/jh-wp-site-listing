@@ -2,7 +2,7 @@
 
 /**
 
- *	Plugin Name: Study Site Listings
+ *	Plugin Name: Study Site Listing
 
  *	Description: A custom locations management system, that allows patients to search and view participating study sites near them. [store-locations map=yes]
 
