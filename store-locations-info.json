@@ -5,7 +5,7 @@
 	"download_url" : "https://github.com/LoreStudio/jh-wp-site-listing/archive/refs/heads/main.zip",
 	"last_updated" : "2023-07-18 00:00:00",
 	"sections" : {
-		"description" : "An easy to use store locations management system that give users to search for stores. [store-locations]",
+		"description" : "A custom locations management system, that allows patients to search and view participating study sites near them. [store-locations map=yes]",
 		"installation" : "Install zip file and click activate",
 		"changelog" : "<h4>2.5 Add ability to Import locations via CSV </h4><h4>v2.3 released on July 18th, 2023</h4><ul><li>Add automatic updater</li></ul>"
 	}
