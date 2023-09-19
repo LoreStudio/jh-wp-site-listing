@@ -1490,11 +1490,11 @@ if ( !class_exists( 'Store_Locations' ) ) {
 				map_lat.meta_value as lat,
 				map_lng.meta_value as lng,
 				((ACOS(SIN($lat * PI() / 180) * SIN(map_lat.meta_value * PI() / 180) + COS($lat * PI() / 180) * COS(map_lat.meta_value * PI() / 180) * COS(($long - map_lng.meta_value) * PI() / 180)) * 180 / PI()) * 60 * 1.1515) AS distance,
-				wp_posts.post_title
+				$wpdb->posts.post_title
 			FROM 
 				$wpdb->postmeta AS map_lat
 				LEFT JOIN $wpdb->postmeta as map_lng ON map_lat.post_id = map_lng.post_id
-				INNER JOIN wp_posts ON $wpdb->posts.ID = map_lat.post_id  
+				INNER JOIN $wpdb->posts ON $wpdb->posts.ID = map_lat.post_id  
 				WHERE map_lat.meta_key = 'map_lat' AND map_lng.meta_key = 'map_lng'
 				HAVING distance < $distance
 				ORDER BY distance ASC;", ARRAY_A);
