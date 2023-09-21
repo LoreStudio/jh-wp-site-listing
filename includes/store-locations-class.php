@@ -1779,6 +1779,7 @@ if ( !class_exists( 'Store_Locations' ) ) {
         				    	while (($line = fgetcsv($file)) !== FALSE) {
                     				$line = array_combine($header,$line);
 							        if($line["title"] != '') {
+										$post_id = ( isset($line["post_id"]) && $line["post_id"] ) ? $line["post_id"] : 0;									
 										$title = ($line["title"]) ? $line["title"] : "";
 										$address1 = ($line["address1"]) ? $line["address1"] : "";
 										$address2 = ($line["address2"]) ? $line["address2"] : "";
@@ -1790,6 +1791,31 @@ if ( !class_exists( 'Store_Locations' ) ) {
 										$phone = ($line["phone"]) ? $line["phone"] : ""; 
 										$email = ($line["email"]) ? $line["email"] : ""; 
 										$provider_name = ($line["provider_name"]) ? $line["provider_name"] : ""; 
+
+										$lat = 0;
+										$long = 0;
+										
+										if( $address1 != ''){
+											$geoaddress = $address1;
+											if( $address2 != ''){
+												$geoaddress .= " $address2";
+											}
+											if( $city != '' && !str_contains( strtolower($geoaddress), strtolower($city) ) ){
+												$geoaddress .= " $city";
+											}
+											if( $state != '' && !str_contains( strtolower($geoaddress), strtolower($state) ) ){
+												$geoaddress .= ", $state";
+											}
+											if( $zip != '' && !str_contains( strtolower($geoaddress), strtolower($zip) ) ){
+												$geoaddress .= ", $zip";
+											}
+											
+											$geocode = $this->geocode($geoaddress);
+											if($geocode && is_array($geocode)) {
+												$lat = $geocode[0];
+        										$long = $geocode[1];
+											}
+										}									
 										
 								/* Data that can be used for debugging upload		
 										echo $title . "<br />";
@@ -1804,11 +1830,23 @@ if ( !class_exists( 'Store_Locations' ) ) {
 										echo $provider_name . "<br />";
 								*/
 										
-										$post_id = wp_insert_post(array(
-										  'post_title'=> $title, 
-										  'post_type'=> 'locations', 
-										  'post_content'=>''
-										));										
+										if($post_id && $title != '') {
+											$post_args = array(
+											  'ID'           => $post_id,
+											  'post_title'   => $title,											  
+										  	);
+											wp_update_post($post_args);
+										}
+										
+										if(!$post_id) {
+											$post_id = wp_insert_post(array(
+										  		'post_title'=> $title, 
+										  		'post_type'=> 'locations', 
+										  		'post_content'=>'',
+												'post_status' => 'publish'
+											));				
+										}
+									
 										if($post_id) {
 											update_post_meta( $post_id, 'language_code', 	'en' );
 											update_post_meta( $post_id, 'languages', 		'en' );											
@@ -1821,7 +1859,12 @@ if ( !class_exists( 'Store_Locations' ) ) {
 											update_post_meta( $post_id, 'website_url', 		sanitize_text_field ( $website ) );
 											update_post_meta( $post_id, 'phone_no', 		sanitize_text_field ( $phone ) );
 											update_post_meta( $post_id, 'email', 		    sanitize_text_field ( $email ) );
-											update_post_meta( $post_id, 'provider_name', 	sanitize_text_field ( $provider_name ) );										
+											update_post_meta( $post_id, 'provider_name', 	sanitize_text_field ( $provider_name ) );	
+
+											if($lat && $long) {
+												update_post_meta( $post_id, 'map_lat', 			$lat );
+												update_post_meta( $post_id, 'map_lng', 			$long );
+											}											
 										}										
 									}
 								}
