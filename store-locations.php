@@ -10,7 +10,7 @@
  */
 
 
-define( 'LOCATION_PLUGIN_VERSION', '2.7' );
+define( 'LOCATION_PLUGIN_VERSION', '2.8' );
 define( 'LOCATION_DIR_URI', plugin_dir_url( __FILE__ ));
 define( 'LOCATION_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'DISTANCE_MILES', 50);
