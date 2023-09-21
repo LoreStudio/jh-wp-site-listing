@@ -659,6 +659,8 @@ if ( !class_exists( 'Store_Locations' ) ) {
 
 			// Import Page
 			add_action( 'admin_menu', [$this, 'location_import_page'] );
+			add_action( 'admin_menu', [$this, 'location_export_page'] );
+			add_action( 'admin_init', [$this, 'location_export_request'] );
 		}
 		// front end enque scripts
 		public function store_locations_scripts ( ) {
@@ -1839,6 +1841,122 @@ if ( !class_exists( 'Store_Locations' ) ) {
 						
 			</div>
 		<?php						
-		} // End of Location import page callback		
+		} // End of Location import page callback	
+
+		function location_export_request(){
+			if ( isset( $_GET['location-csv-export'] )) {
+				
+					$expargs = array (
+						'post_type'		=> 'locations',
+						'post_status'		=> 'publish',
+						'posts_per_page'	=> -1,
+					);
+				
+					$explocations = get_posts($expargs);
+				
+					if($explocations) {
+						
+						header('Content-Type: application/csv');
+						header('Content-Disposition: attachment; filename=location-export.csv');
+						$f = fopen('php://output', 'w');	
+						fputcsv($f, ["post_id","title","address1","address2","city","state","zip_code","country","website","phone","email","provider_name"], ",");
+						foreach($explocations as $location) {
+							$post_id = $location->ID;
+							$title = $location->post_title;																
+							$address1 = get_post_meta($post_id, 'store_address', true);
+							$address2 = get_post_meta($post_id, 'address_2', true);
+							$city = get_post_meta($post_id, 'store_city', true);
+							$state = get_post_meta($post_id, 'store_state', true);
+							$zip = get_post_meta($post_id, 'store_zipcode', true);
+							$country = get_post_meta($post_id, 'country', true);  
+							$website = get_post_meta($post_id, 'website_url', true); 
+							$phone = get_post_meta($post_id, 'phone_no', true);
+							$email = get_post_meta($post_id, 'email', true); 
+							$provider_name = get_post_meta($post_id, 'provider_name', true); 
+							
+							//fputcsv($f,[$post_id,"Test"]);
+							fputcsv($f, [$post_id,$title,$address1,$address2,$city,$state,$zip,$country,$website,$phone,$email,$provider_name], ",");
+						}
+						
+						fclose($f);
+						exit();
+					}								
+			}
+		}		
+		
+		function location_export_page() {
+			    add_submenu_page(
+				'edit.php?post_type=locations',
+				__( 'Export Locations', 'textdomain' ),
+				__( 'Export Locations', 'textdomain' ),
+				'manage_options',
+				'export-location',
+				[$this,'location_export_page_html'],
+			);
+		} // end of upload page
+		
+		function location_export_page_html() {
+		?>
+			<div class="wrap">
+				<h1>Export Locations</h1>			
+				<h3> Click button below to export locations. </h3>
+				<form method='get' action="">
+					<input type="hidden" name="post_type" value="locations" />
+					<input type="hidden" name="page" value="export-location" />					
+					<input type="submit" name='location-csv-export' id="csvExport" value="Export"/>
+				</form>
+						
+			</div>
+		<?php						
+		} // End of Location export page callback		
+				
+		function geocode($address){
+
+			$apikey = esc_attr(get_option('gmap_api_key'));
+			if ( empty( $apikey ) ) {
+				return false;
+			}
+
+			// url encode the address
+			$address = urlencode($address);
+
+			// google map geocode api url
+			$url = "https://maps.googleapis.com/maps/api/geocode/json?address=$address&key=$apikey";
+
+			// get the json response
+			$resp_json = file_get_contents($url);
+
+			// decode the json
+			$resp = json_decode($resp_json, true);
+
+			// response status will be 'OK', if able to geocode given address 
+			if($resp['status']=='OK'){
+
+				// get the important data
+				$lat = isset($resp['results'][0]['geometry']['location']['lat']) ? $resp['results'][0]['geometry']['location']['lat'] : "";
+				$long = isset($resp['results'][0]['geometry']['location']['lng']) ? $resp['results'][0]['geometry']['location']['lng'] : "";        
+
+				// verify if data is complete
+				if($lat && $long){
+
+					// put the data in the array
+					$data_arr = array();            
+
+					array_push(
+						$data_arr, 
+							$lat, 
+							$long                     
+						);
+
+					return $data_arr;
+
+				}else{
+					return false;
+				}
+
+			} else {        
+				return false;
+			}
+		} // End of geocode function					
 	} 
 }
