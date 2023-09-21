@@ -3,10 +3,10 @@
 	"slug" : "store-locations",
 	"version" : "2.8",
 	"download_url" : "https://github.com/LoreStudio/jh-wp-site-listing/archive/refs/heads/main.zip",
-	"last_updated" : "2023-07-19 18:52:00",
+	"last_updated" : "2023-09-21 18:52:00",
 	"sections" : {
 		"description" : "A custom locations management system, that allows patients to search and view participating study sites near them. [store-locations map=yes]",
 		"installation" : "Install zip file and click activate",
-		"changelog" : "<h4>2.7 Fixed the search issue that was showing on the MenB sites.</h4><h4>v2.7 released on Setp 19th, 2023</h4><ul><li>Updated php file to resolve search bug</li></ul>"
+		"changelog" : "<h4> v2.8 adds the ability to import locations</h4> <h4>2.7 Fixed the search issue that was showing on the MenB sites.</h4><h4>v2.7 released on Setp 19th, 2023</h4><ul><li>Updated php file to resolve search bug</li></ul>"
 	}
 }
