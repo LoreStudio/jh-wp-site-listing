@@ -809,7 +809,7 @@ if ( !class_exists( 'Store_Locations' ) ) {
 			<?php endif; ?>
 			<div class="store-info-container <?php echo (esc_attr($attr['map']) == 'no') ? 'no-map':'';?>">
 				<div class="store-locations">
-					<div class="store-locations-search">
+					<div class="store-locations-search OneLinkTx">
 						<form role="search" class="store-search-form">
 							<input type="text" value name="search-text" id="search-text" placeholder="<?php _e( 'Enter a location', 'store-location' ); ?>">
 							<input type="image" id="search-btn" alt="Search" src="<?php echo LOCATION_DIR_URI.'images/icon-arrow-right.svg'?>">
@@ -826,7 +826,7 @@ if ( !class_exists( 'Store_Locations' ) ) {
 							</div>
 					   <?php endif; ?>
 					</div>
-					<h5 class="store-locations-result-info">
+					<h5 class="store-locations-result-info OneLinkTx">
 						<?php _e( 'Showing', 'store-location' )?> 
 						<span id="found-results"> 0</span> <?php _e( 'Results Near You', 'store-location' )?>
 					</h5>
@@ -1353,7 +1353,7 @@ if ( !class_exists( 'Store_Locations' ) ) {
 						<div class="vc_row row-internal row-container">
 							<div class="row row-child">
 								<div class="wpb_row row-inner" style="height: 102px;">
-									<div class="wpb_column pos-top pos-center align_left column_child col-lg-3 single-internal-gutter">
+									<div class="wpb_column pos-top pos-center align_left column_child col-lg-3 single-internal-gutter OneLinkNoTx">
 										<div class="uncol style-light">
 											<div class="uncoltable">
 												<div class="uncell no-block-padding">
@@ -1370,7 +1370,7 @@ if ( !class_exists( 'Store_Locations' ) ) {
 											</div>
 										</div>
 									</div>
-									<div class="wpb_column pos-top pos-center align_left column_child col-lg-3 single-internal-gutter">
+									<div class="wpb_column pos-top pos-center align_left column_child col-lg-3 single-internal-gutter OneLinkNoTx">
 										<div class="uncol style-light">
 											<div class="uncoltable">
 												<div class="uncell no-block-padding">
@@ -1387,7 +1387,7 @@ if ( !class_exists( 'Store_Locations' ) ) {
 											</div>
 										</div>
 									</div>
-									<div class="wpb_column pos-top pos-center align_left column_child col-lg-3 single-internal-gutter">
+									<div class="wpb_column pos-top pos-center align_left column_child col-lg-3 single-internal-gutter OneLinkNoTx">
 										<div class="uncol style-light">
 											<div class="uncoltable">
 												<div class="uncell no-block-padding">
@@ -1409,7 +1409,7 @@ if ( !class_exists( 'Store_Locations' ) ) {
 											</div>
 										</div>
 									</div>
-									<div class="wpb_column pos-top pos-center align_left column_child col-lg-3 single-internal-gutter">
+									<div class="wpb_column pos-top pos-center align_left column_child col-lg-3 single-internal-gutter OneLinkNoTx">
 										<div class="uncol style-light">
 											<div class="uncoltable">
 												<div class="uncell no-block-padding">
@@ -1441,6 +1441,7 @@ if ( !class_exists( 'Store_Locations' ) ) {
 						</div>
 					<?php else: ?>                    
 						<div class="store-location loc-row" id="loc-<?php echo $j;?>">
+							<div class="OneLinkNoTx">
 							<h5 class="store-location-name">
 								<?php echo $location['post_title'];?>
 							</h5>
@@ -1468,7 +1469,8 @@ if ( !class_exists( 'Store_Locations' ) ) {
 									</a>
 								</div>
 							<?php endif; ?>
-							<div class="store-location-btn-wrapper">
+							</div>
+							<div class="store-location-btn-wrapper OneLinkTx">
 								<a href="javascript:void(0);" data-id="<?php echo $j;?>" data-lat="<?php echo $lat;?>" data-lng="<?php echo $lng;?>" class="store-location-btn">
 									<?php _e( 'View On Map', 'store-location' );?>
 								</a>
