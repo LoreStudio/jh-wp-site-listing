@@ -75,7 +75,7 @@ function set_user_position(position) {
 	jQuery('#place_lng').val(position.coords.longitude);
 }						
 function initgMap() {
-	console.log('JS LOG::');
+	// console.log('JS LOG::');
 	var map_exist = document.getElementById("store-map");
 	if( map_exist ) {
 		var latlng = new google.maps.LatLng(lat,lng);
@@ -101,7 +101,7 @@ function initgMap() {
 			}
 			reset_zoom = true;
 			if (place.geometry.location) {
-				console.log('GEOMETRY:'+place.geometry.location);
+				// console.log('GEOMETRY:'+place.geometry.location);
 				var latitude = place.geometry.location.lat();
 				var longitude = place.geometry.location.lng();
 				jQuery('#place_lat').val(latitude);
@@ -125,7 +125,7 @@ function initgMap() {
 			}
 			reset_zoom = true;
 			if (place.geometry.location) {
-				 console.log('GEOMETRY:'+place.geometry.location);
+				//  console.log('GEOMETRY:'+place.geometry.location);
 				 var latitude = place.geometry.location.lat();
 				 var longitude = place.geometry.location.lng();
 				 jQuery('#place_lat').val(latitude);
@@ -133,7 +133,7 @@ function initgMap() {
 				 search_location_near_by();
 			}
 		});
-		console.log('no map');
+		// console.log('no map');
 		//return false;
 	}
 }
@@ -147,7 +147,7 @@ function codeLatLng(lat, lng) {
 		 //formatted address
 		 jQuery('.pac-target-input').attr('placeholder', results[0].formatted_address);
 		 //jQuery('.pac-target-input').val( results[0].formatted_address);
-		 console.log(results[0].formatted_address)
+		//  console.log(results[0].formatted_address)
 		} else {
 		  console.log("No results found");
 		}
@@ -191,7 +191,7 @@ function search_location_near_by(){
 	},
 	}).done(function(response){ //							
 		if(response.status){ 
-			console.log('FOUND');
+			// console.log('FOUND');
 			var s_locations = [];
 			if( show_map == 'yes' ) {											
 				jQuery.each( response.all_locations, function( k, v ) {
@@ -282,7 +282,7 @@ function popup_info_window(locations, bounds, infowindow){
 							popInfo +='<a href="https://www.google.com/maps?q='+locations[count].address+'" class="get-directions-popup-link" target="_blank">'+locations[count].direction+'</a>';
 						}
 	                popInfo += '</div>';
-	                console.log( locations )	
+	                // console.log( locations )	
                     infowindow.setContent( popInfo );
                     infowindow.open(map, marker);
 
@@ -310,7 +310,7 @@ function popup_info_window(locations, bounds, infowindow){
 			 
         }
 		if(!reset_zoom){
-			console.log('no fit bounds');
+			// console.log('no fit bounds');
 			//map.fitBounds(bounds);
 			var mbounds = map.getBounds();
 			var update_count = 0;
@@ -330,7 +330,7 @@ function popup_info_window(locations, bounds, infowindow){
 			jQuery('.loc-row').not('.loc-row.exist-loc').remove();
 
 		}else{
-			console.log('fit bounds');
+			// console.log('fit bounds');
 			map.fitBounds(bounds);
 			if( markers.length == 1){
 				map.setZoom(14);
@@ -338,11 +338,11 @@ function popup_info_window(locations, bounds, infowindow){
 		}	
 		
 		setTimeout(function(){
-            console.log('add Class');
+            // console.log('add Class');
            jQuery(".gm-style").find('img').each(function( index ){
 				//console.log('Index:'+index);
 				if(typeof locations[index] !== 'undefined'){
-					console.log('INDEX::'+locations[index].ID);
+					// console.log('INDEX::'+locations[index].ID);
 					jQuery("div[title=\"" + locations[index].name+ "\"]").addClass('marker-icon').addClass('icon-img-'+locations[index].ID);
 
                 	//jQuery(this).find( "img" ).addClass('marker-icon').addClass('icon-img-'+locations[index].ID);
@@ -365,7 +365,7 @@ function popup_info_window(locations, bounds, infowindow){
 					//console.log('zoom move bounds:'+bounds);
 					//var NewMapCenter = map.getBounds().getCenter();
 					var NewMapCenter = map.getCenter();
-					console.log('Zoom map center:'+NewMapCenter);
+					// console.log('Zoom map center:'+NewMapCenter);
 					//var NewMapCenter = map.getCenter();			
 					lat = NewMapCenter.lat();
 					lng = NewMapCenter.lng();
