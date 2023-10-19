@@ -1144,7 +1144,7 @@ if ( !class_exists( 'Store_Locations' ) ) {
 				return;
 			}
 
-			update_post_meta( $post_id, 'language_code', 	strtolower( sanitize_text_field ( $_POST['language_code'] ) ) );
+			update_post_meta( $post_id, 'language_code', 	isset( $_POST['language_code'] ) ? strtolower( sanitize_text_field ( $_POST['language_code'] ) ) : '' );
 			update_post_meta( $post_id, 'languages', 		implode( ',', (array)$_POST['languages'] ) );
 			update_post_meta( $post_id, 'country', 			sanitize_text_field ( $_POST['country'] ) );
 			update_post_meta( $post_id, 'store_address', 	sanitize_text_field ( $_POST['store_address'] ) );
