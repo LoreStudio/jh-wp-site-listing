@@ -613,7 +613,19 @@ if ( !class_exists( 'Store_Locations' ) ) {
 				'zu',
 				'zu.svg',
 				'Zulu'
-			)
+			),
+			// Add english canadian
+			'en-ca' => array(
+				'en-ca',
+				'en-ca.svg',
+				'English (Canada)'
+			),
+			// Add french canadian
+			'fr-ca' => array(
+				'fr-ca',
+				'fr-ca.svg',
+				'French (Canada)'
+			),
 		);
 
 		public function __construct ( ) {	
@@ -661,6 +673,9 @@ if ( !class_exists( 'Store_Locations' ) ) {
 			add_action( 'admin_menu', [$this, 'location_import_page'] );
 			add_action( 'admin_menu', [$this, 'location_export_page'] );
 			add_action( 'admin_init', [$this, 'location_export_request'] );
+
+			// Add language feild to bulk edit
+			add_action( 'bulk_edit_custom_box', array( $this, 'quick_edit_custom_box' ), 10, 2 );
 		}
 		// front end enque scripts
 		public function store_locations_scripts ( ) {
@@ -1120,6 +1135,15 @@ if ( !class_exists( 'Store_Locations' ) ) {
 			// var_dump_pre( $_POST );
 			// var_dump_pre( implode( ',', $_POST['languages'] ) );
 			// die();
+
+			// If we are on the bulk edit screen, update post languages
+			if ( isset( $_REQUEST['bulk_edit'] ) ) {
+				
+				$languages = implode( ',', $_REQUEST['languages'] );
+				update_post_meta( $post_id, 'languages', $languages );
+				return;
+			}
+
 			update_post_meta( $post_id, 'language_code', 	strtolower( sanitize_text_field ( $_POST['language_code'] ) ) );
 			update_post_meta( $post_id, 'languages', 		implode( ',', (array)$_POST['languages'] ) );
 			update_post_meta( $post_id, 'country', 			sanitize_text_field ( $_POST['country'] ) );
@@ -2011,6 +2035,41 @@ if ( !class_exists( 'Store_Locations' ) ) {
 			} else {        
 				return false;
 			}
-		} // End of geocode function					
+		} // End of geocode function
+		
+		/**
+		 * Add custom field to quick edit screen.
+		 */
+		function quick_edit_custom_box( $column_name ) {
+			switch ( $column_name ) {
+				case 'lang':
+					wp_nonce_field( 'store_location_bulk_edit_nonce', 'store_location_bulk_edit_nonce' );
+					?>
+					<?php 
+						global $wpdb;
+
+						// Get all active wpml languages from wp_icl_languages table
+						$active_languages = $wpdb->get_results( "SELECT code, english_name FROM {$wpdb->prefix}icl_languages WHERE active = 1", ARRAY_A );
+					?>
+					<!-- loop through all active languages -->
+					<fieldset class="inline-edit-col-right">
+						<div class="inline-edit-col column-<?php echo esc_attr( $column_name ); ?>">
+							<label class="inline-edit-group">
+									<?php esc_html_e( 'Languages: ', 'store-location' ); ?>
+
+									<?php foreach ( $active_languages as $language ) : ?>
+										<label>
+											<input type="checkbox" name="languages[]" value="<?php echo $language['code']; ?>" />
+											<?php echo $language['english_name']; ?>
+										</label>
+									<?php endforeach; ?>
+							</label>
+						</div>
+					</fieldset>
+					
+					<?php
+					break;
+			}
+		}
 	} 
 }
