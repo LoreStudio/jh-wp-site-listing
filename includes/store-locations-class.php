@@ -1196,6 +1196,15 @@ if ( !class_exists( 'Store_Locations' ) ) {
 					while( $the_query->have_posts( ) ) {
 						$the_query->the_post( );
 						$post_id = get_the_ID( );
+
+						// If the lang is set, then check if the post has the lang
+						if ( !empty( $lang ) ) {
+							$language_code = explode ( ',', get_post_meta ( $post_id, 'languages', true ) );
+							if( ! in_array( $lang, $language_code ) ) {
+								continue;
+							}
+						}
+
 						$locations[] = array (
 							'post_id'		=> $post_id,
 							'post_title'	=> get_the_title( ),
