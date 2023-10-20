@@ -6,11 +6,11 @@
 
  *	Description: A custom locations management system, that allows patients to search and view participating study sites near them. [store-locations map=yes]
 
- *	Version: 2.9
+ *	Version: 3.1
  */
 
 
-define( 'LOCATION_PLUGIN_VERSION', '3.0' );
+define( 'LOCATION_PLUGIN_VERSION', '3.1' );
 define( 'LOCATION_DIR_URI', plugin_dir_url( __FILE__ ));
 define( 'LOCATION_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'DISTANCE_MILES', 50);
