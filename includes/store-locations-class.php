@@ -664,31 +664,9 @@ if ( !class_exists( 'Store_Locations' ) ) {
 			add_action( 'load-edit.php', 			[$this, 'load_custom_filter_wpse_94630'] );
 			add_action( 'restrict_manage_posts', 	[$this, 'wpse45436_admin_posts_filter_restrict_manage_posts'], 10, 1 );
 
-			// Add plugin options
-			if ( ! get_option( 'jh_wp_site_listing_plugin_options' ) ) {
-				add_option( 'jh_wp_site_listing_plugin_options', array(
-					'version_checker' => array(
-						'last_check' => time(),
-					),
-				) );
-			}
-
-			// Get plugin options
-			$plugin_options = get_option( 'jh_wp_site_listing_plugin_options' );
-
-			// Add 30 minutes to the last check time
-			$last_check = (int) $plugin_options['version_checker']['last_check'] + 1800;
-
-			//Update functions
-			if ( time() > $last_check ) {
-				add_filter( 'plugins_api', [ $this, 'update_info' ], 20, 3 );
-				add_filter( 'site_transient_update_plugins', [ $this, 'plugin_update' ] );
-
-				// Update the last check time
-				$plugin_options['version_checker']['last_check'] = time();
-				update_option( 'jh_wp_site_listing_plugin_options', $plugin_options );
-			}
-
+			// Update functions
+			add_filter( 'plugins_api', [ $this, 'update_info' ], 20, 3 );
+			add_filter( 'site_transient_update_plugins', [ $this, 'plugin_update' ] );
 			add_action( 'upgrader_process_complete', [ $this, 'update_purge' ], 10, 2 );
 
 			// Import Page
@@ -1724,8 +1702,8 @@ if ( !class_exists( 'Store_Locations' ) ) {
 		
 			$remote = get_transient( $this->cache_key );
 			
-			if( false === $remote || ! $this->cache_allowed ) {
-			
+			if( false === $remote ) {
+
 				$remote = wp_remote_get( 'https://raw.githubusercontent.com/LoreStudio/jh-wp-site-listing/main/store-locations-info.json', [
 					'timeout' => 10,
 			    		'headers' => [
@@ -1737,7 +1715,7 @@ if ( !class_exists( 'Store_Locations' ) ) {
 					return false;
 				}
 			
-				set_transient( $this->cache_key, $remote, 12 * HOUR_IN_SECONDS );
+				set_transient( $this->cache_key, $remote, 120 );
 			
 			}
 			
