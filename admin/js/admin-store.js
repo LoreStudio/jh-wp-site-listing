@@ -45,3 +45,26 @@
     });
 
 })(jQuery);
+
+/**
+ * Import submit
+ */
+function importSubmit( form ) {
+	if ( ! form ) {
+		return;
+	}
+
+	let input = document.querySelector( 'input[type="file"]' );
+	let btn = document.querySelector( '.import-btn' );
+
+	btn.addEventListener( 'click', e => {
+		e.preventDefault();
+		input.click();
+	} );
+
+	input.addEventListener( 'change', e => {
+		e.preventDefault();
+		form.submit();
+	} );
+}
+importSubmit( document.querySelector( '.import-location-form' ) );

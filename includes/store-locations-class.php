@@ -1806,7 +1806,7 @@ if ( !class_exists( 'Store_Locations' ) ) {
 		function location_import_page_html() {
 		?>
 			<div class="wrap">
-				<h1>Import Locations</h1>
+				<h1 class="page-title">Import Locations</h1>
 				<?php 			
 					if ( isset($_POST['action_type'] ) && $_POST['action_type'] == 'location_upload_csv' )  {
 						    if(($file = fopen($_FILES['filename']['tmp_name'], "r")) !== FALSE ){        
@@ -1909,14 +1909,13 @@ if ( !class_exists( 'Store_Locations' ) ) {
 							}
 					} 			
 				?>				
-				<h3> Choose a file and then click submit below to add file data to database </h3>
-				<form method="POST" enctype='multipart/form-data'>					
+				<p class="form-description">Import locations by clicking the button below. The file must be a CSV file and once uploaded, the import will begin automatically.</p>
+				<form method="POST" enctype='multipart/form-data' class="import-location-form">					
 					<input type="hidden" name="action_type" value="location_upload_csv">
-					<label for="myfile">Select File:</label> 
-					<input type="file" class="filestyle" name="filename" data-iconName="glyphicon-inbox" accept=".csv" required> <br />
-					<button style="margin-top:20px;"> Submit </button>
+					<label for="import-locations-file" style="display: none;">Select file to being import</label> 
+					<input id="import-locations-file" type="file" class="filestyle" name="filename" data-iconName="glyphicon-inbox" accept=".csv" style="display: none;" aria-label="Select file to being import" required aria-required="true">
+					<button class="import-btn">Import</button>
 				</form>
-						
 			</div>
 		<?php						
 		} // End of Location import page callback	
