@@ -1975,14 +1975,14 @@ if ( !class_exists( 'Store_Locations' ) ) {
 		function location_export_page_html() {
 		?>
 			<div class="wrap">
-				<h1>Export Locations</h1>			
-				<h3> Click button below to export locations. </h3>
-				<form method='get' action="">
+				<h1 class="page-title">Export Locations</h1>			
+				<p class="form-description">Click the button below to export all locations.</p>
+				<form method='get' action="" class="export-location-form">
 					<input type="hidden" name="post_type" value="locations" />
-					<input type="hidden" name="page" value="export-location" />					
-					<input type="submit" name='location-csv-export' id="csvExport" value="Export"/>
+					<input type="hidden" name="page" value="export-location" />
+					<input type="hidden" name='location-csv-export' id="csvExport" value="Export" />
+					<button class="export-btn">Export</button>
 				</form>
-						
 			</div>
 		<?php						
 		} // End of Location export page callback		

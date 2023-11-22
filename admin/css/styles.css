@@ -37,7 +37,7 @@
     cursor: pointer;
 }
 
-.locations_page_import-location .page-title {
+.locations_page_import-location .page-title, .locations_page_export-location .page-title {
     font-size: 22px;
     font-weight: 400;
     margin: 0;
@@ -45,11 +45,11 @@
     margin-top: 30px;
 }
 
-.locations_page_import-location .form-description {
+.locations_page_import-location .form-description, .locations_page_export-location .form-description {
     margin-bottom: 30px;
 }
 
-.locations_page_import-location .import-location-form .import-btn {
+.locations_page_import-location .import-location-form .import-btn, .locations_page_export-location .export-location-form .export-btn {
     margin-top: 20px;
     padding-top: 8px;
     padding-right: 16px;
@@ -62,6 +62,6 @@
     align-items: center;
 }
 
-.locations_page_import-location .import-location-form .import-btn:hover {
+.locations_page_import-location .import-location-form .import-btn:hover, .locations_page_export-location .export-location-form .export-btn:hover {
     background-color: #0a6faa;
 }
