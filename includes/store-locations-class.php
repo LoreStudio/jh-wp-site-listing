@@ -1145,19 +1145,19 @@ if ( !class_exists( 'Store_Locations' ) ) {
 			}
 
 			update_post_meta( $post_id, 'language_code', 	isset( $_POST['language_code'] ) ? strtolower( sanitize_text_field ( $_POST['language_code'] ) ) : '' );
-			update_post_meta( $post_id, 'languages', 		implode( ',', (array)$_POST['languages'] ) );
-			update_post_meta( $post_id, 'country', 			sanitize_text_field ( $_POST['country'] ) );
-			update_post_meta( $post_id, 'store_address', 	sanitize_text_field ( $_POST['store_address'] ) );
-			update_post_meta( $post_id, 'address_2', 		sanitize_text_field ( $_POST['address_2'] ) );
-			update_post_meta( $post_id, 'store_city', 		sanitize_text_field ( $_POST['store_city'] ) );
-			update_post_meta( $post_id, 'store_state', 		sanitize_text_field ( $_POST['store_state'] ) );
-			update_post_meta( $post_id, 'store_zipcode',	sanitize_text_field ( $_POST['store_zipcode'] ) );
-			update_post_meta( $post_id, 'map_lat', 			$_POST['map_lat'] );
-			update_post_meta( $post_id, 'map_lng', 			$_POST['map_lng'] );
-			update_post_meta( $post_id, 'website_url', 		sanitize_text_field ( $_POST['website_url'] ) );
-			update_post_meta( $post_id, 'phone_no', 		sanitize_text_field ( $_POST['phone_no'] ) );
-			update_post_meta( $post_id, 'email', 		    sanitize_text_field ( $_POST['email'] ) );
-			update_post_meta( $post_id, 'provider_name', 	sanitize_text_field ( $_POST['provider_name'] ) );
+			update_post_meta( $post_id, 'languages', 		isset( $_POST['language_code'] ) ? implode( ',', (array)$_POST['languages'] ) : '' );
+			update_post_meta( $post_id, 'country', 			isset( $_POST['country'] ) ? sanitize_text_field ( $_POST['country'] ) : '' );
+			update_post_meta( $post_id, 'store_address', 	isset( $_POST['store_address'] ) ? sanitize_text_field ( $_POST['store_address'] ) : '' );
+			update_post_meta( $post_id, 'address_2', 		isset( $_POST['address_2'] ) ? sanitize_text_field ( $_POST['address_2'] ) : '' );
+			update_post_meta( $post_id, 'store_city', 		isset( $_POST['store_city'] ) ? sanitize_text_field ( $_POST['store_city'] ) : '' );
+			update_post_meta( $post_id, 'store_state', 		isset( $_POST['store_state'] ) ? sanitize_text_field ( $_POST['store_state'] ) : '' );
+			update_post_meta( $post_id, 'store_zipcode',	isset( $_POST['store_zipcode'] ) ? sanitize_text_field ( $_POST['store_zipcode'] ) : '' );
+			update_post_meta( $post_id, 'map_lat', 			isset( $_POST['map_lat'] ) ? $_POST['map_lat'] : '' );
+			update_post_meta( $post_id, 'map_lng', 			isset( $_POST['map_lng'] ) ? $_POST['map_lng'] : '' );
+			update_post_meta( $post_id, 'website_url', 		isset( $_POST['website_url'] ) ? sanitize_text_field ( $_POST['website_url'] ) : '' );
+			update_post_meta( $post_id, 'phone_no', 		isset( $_POST['phone_no'] ) ? sanitize_text_field ( $_POST['phone_no'] ) : '' );
+			update_post_meta( $post_id, 'email', 		    isset( $_POST['email'] ) ? sanitize_text_field ( $_POST['email'] ) : '' );
+			update_post_meta( $post_id, 'provider_name', 	isset( $_POST['provider_name'] ) ? sanitize_text_field ( $_POST['provider_name'] ) : '' );
 
 		}
 		
