@@ -1145,19 +1145,19 @@ if ( !class_exists( 'Store_Locations' ) ) {
 			}
 
 			update_post_meta( $post_id, 'language_code', 	isset( $_POST['language_code'] ) ? strtolower( sanitize_text_field ( $_POST['language_code'] ) ) : '' );
-			update_post_meta( $post_id, 'languages', 		implode( ',', (array)$_POST['languages'] ) );
-			update_post_meta( $post_id, 'country', 			sanitize_text_field ( $_POST['country'] ) );
-			update_post_meta( $post_id, 'store_address', 	sanitize_text_field ( $_POST['store_address'] ) );
-			update_post_meta( $post_id, 'address_2', 		sanitize_text_field ( $_POST['address_2'] ) );
-			update_post_meta( $post_id, 'store_city', 		sanitize_text_field ( $_POST['store_city'] ) );
-			update_post_meta( $post_id, 'store_state', 		sanitize_text_field ( $_POST['store_state'] ) );
-			update_post_meta( $post_id, 'store_zipcode',	sanitize_text_field ( $_POST['store_zipcode'] ) );
-			update_post_meta( $post_id, 'map_lat', 			$_POST['map_lat'] );
-			update_post_meta( $post_id, 'map_lng', 			$_POST['map_lng'] );
-			update_post_meta( $post_id, 'website_url', 		sanitize_text_field ( $_POST['website_url'] ) );
-			update_post_meta( $post_id, 'phone_no', 		sanitize_text_field ( $_POST['phone_no'] ) );
-			update_post_meta( $post_id, 'email', 		    sanitize_text_field ( $_POST['email'] ) );
-			update_post_meta( $post_id, 'provider_name', 	sanitize_text_field ( $_POST['provider_name'] ) );
+			update_post_meta( $post_id, 'languages', 		isset( $_POST['language_code'] ) ? implode( ',', (array)$_POST['languages'] ) : '' );
+			update_post_meta( $post_id, 'country', 			isset( $_POST['country'] ) ? sanitize_text_field ( $_POST['country'] ) : '' );
+			update_post_meta( $post_id, 'store_address', 	isset( $_POST['store_address'] ) ? sanitize_text_field ( $_POST['store_address'] ) : '' );
+			update_post_meta( $post_id, 'address_2', 		isset( $_POST['address_2'] ) ? sanitize_text_field ( $_POST['address_2'] ) : '' );
+			update_post_meta( $post_id, 'store_city', 		isset( $_POST['store_city'] ) ? sanitize_text_field ( $_POST['store_city'] ) : '' );
+			update_post_meta( $post_id, 'store_state', 		isset( $_POST['store_state'] ) ? sanitize_text_field ( $_POST['store_state'] ) : '' );
+			update_post_meta( $post_id, 'store_zipcode',	isset( $_POST['store_zipcode'] ) ? sanitize_text_field ( $_POST['store_zipcode'] ) : '' );
+			update_post_meta( $post_id, 'map_lat', 			isset( $_POST['map_lat'] ) ? $_POST['map_lat'] : '' );
+			update_post_meta( $post_id, 'map_lng', 			isset( $_POST['map_lng'] ) ? $_POST['map_lng'] : '' );
+			update_post_meta( $post_id, 'website_url', 		isset( $_POST['website_url'] ) ? sanitize_text_field ( $_POST['website_url'] ) : '' );
+			update_post_meta( $post_id, 'phone_no', 		isset( $_POST['phone_no'] ) ? sanitize_text_field ( $_POST['phone_no'] ) : '' );
+			update_post_meta( $post_id, 'email', 		    isset( $_POST['email'] ) ? sanitize_text_field ( $_POST['email'] ) : '' );
+			update_post_meta( $post_id, 'provider_name', 	isset( $_POST['provider_name'] ) ? sanitize_text_field ( $_POST['provider_name'] ) : '' );
 
 		}
 		
@@ -1806,7 +1806,7 @@ if ( !class_exists( 'Store_Locations' ) ) {
 		function location_import_page_html() {
 		?>
 			<div class="wrap">
-				<h1>Import Locations</h1>
+				<h1 class="page-title">Import Locations</h1>
 				<?php 			
 					if ( isset($_POST['action_type'] ) && $_POST['action_type'] == 'location_upload_csv' )  {
 						    if(($file = fopen($_FILES['filename']['tmp_name'], "r")) !== FALSE ){        
@@ -1909,14 +1909,13 @@ if ( !class_exists( 'Store_Locations' ) ) {
 							}
 					} 			
 				?>				
-				<h3> Choose a file and then click submit below to add file data to database </h3>
-				<form method="POST" enctype='multipart/form-data'>					
+				<p class="form-description">Import locations by clicking the button below. The file must be a CSV file and once uploaded, the import will begin automatically.</p>
+				<form method="POST" enctype='multipart/form-data' class="import-location-form">					
 					<input type="hidden" name="action_type" value="location_upload_csv">
-					<label for="myfile">Select File:</label> 
-					<input type="file" class="filestyle" name="filename" data-iconName="glyphicon-inbox" accept=".csv" required> <br />
-					<button style="margin-top:20px;"> Submit </button>
+					<label for="import-locations-file" style="display: none;">Select file to being import</label> 
+					<input id="import-locations-file" type="file" class="filestyle" name="filename" data-iconName="glyphicon-inbox" accept=".csv" style="display: none;" aria-label="Select file to being import" required aria-required="true">
+					<button class="import-btn">Import</button>
 				</form>
-						
 			</div>
 		<?php						
 		} // End of Location import page callback	
@@ -1976,14 +1975,14 @@ if ( !class_exists( 'Store_Locations' ) ) {
 		function location_export_page_html() {
 		?>
 			<div class="wrap">
-				<h1>Export Locations</h1>			
-				<h3> Click button below to export locations. </h3>
-				<form method='get' action="">
+				<h1 class="page-title">Export Locations</h1>			
+				<p class="form-description">Click the button below to export all locations.</p>
+				<form method='get' action="" class="export-location-form">
 					<input type="hidden" name="post_type" value="locations" />
-					<input type="hidden" name="page" value="export-location" />					
-					<input type="submit" name='location-csv-export' id="csvExport" value="Export"/>
+					<input type="hidden" name="page" value="export-location" />
+					<input type="hidden" name='location-csv-export' id="csvExport" value="Export" />
+					<button class="export-btn">Export</button>
 				</form>
-						
 			</div>
 		<?php						
 		} // End of Location export page callback		
