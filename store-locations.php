@@ -6,7 +6,7 @@
 
  *	Description: A custom locations management system, that allows patients to search and view participating study sites near them. [store-locations map=yes]
 
- *	Version: 3.5
+ *	Version: 3.6
  */
 
 
