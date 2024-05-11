@@ -1905,7 +1905,8 @@ if ( !class_exists( 'Store_Locations' ) ) {
 										$website = ($line["website"]) ? $line["website"] : ""; 
 										$phone = ($line["phone"]) ? $line["phone"] : ""; 
 										$email = ($line["email"]) ? $line["email"] : ""; 
-										$provider_name = ($line["provider_name"]) ? $line["provider_name"] : ""; 
+										$provider_name = ($line["provider_name"]) ? $line["provider_name"] : "";
+										$study = ($line["study"]) ? $line["study"] : "";
 
 										$lat = 0;
 										$long = 0;
@@ -1974,7 +1975,8 @@ if ( !class_exists( 'Store_Locations' ) ) {
 											update_post_meta( $post_id, 'website_url', 		sanitize_text_field ( $website ) );
 											update_post_meta( $post_id, 'phone_no', 		sanitize_text_field ( $phone ) );
 											update_post_meta( $post_id, 'email', 		    sanitize_text_field ( $email ) );
-											update_post_meta( $post_id, 'provider_name', 	sanitize_text_field ( $provider_name ) );	
+											update_post_meta( $post_id, 'provider_name', 	sanitize_text_field ( $provider_name ) );
+											update_post_meta( $post_id, 'study', 		    sanitize_text_field ( $study ) );
 
 											if($lat && $long) {
 												update_post_meta( $post_id, 'map_lat', 			$lat );
@@ -2029,7 +2031,8 @@ if ( !class_exists( 'Store_Locations' ) ) {
 							$website = get_post_meta($post_id, 'website_url', true); 
 							$phone = get_post_meta($post_id, 'phone_no', true);
 							$email = get_post_meta($post_id, 'email', true); 
-							$provider_name = get_post_meta($post_id, 'provider_name', true); 
+							$provider_name = get_post_meta($post_id, 'provider_name', true);
+							$study = get_post_meta($post_id, 'study', true);
 							
 							//fputcsv($f,[$post_id,"Test"]);
 							fputcsv($f, [$post_id,$title,$address1,$address2,$city,$state,$zip,$country,$website,$phone,$email,$provider_name], ",");
