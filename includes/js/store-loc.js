@@ -169,6 +169,7 @@ function search_location_near_by(){
 	var pos_lng 		= jQuery( '#place_lng' ).val() || '';
 	var show_map 		= jQuery( '#show_map' ).val();
 	var language_code 	= jQuery( '#language_code' ).val();
+	var study 			= jQuery( '#study' ).val();
 
 	/*if(pos_lat == '' || pos_lng == ''){
 		alert('Please enter a valid address');
@@ -184,6 +185,7 @@ function search_location_near_by(){
 			pos_lng		: pos_lng,
 			lang		: language_code,
 			show_map	: show_map,
+			study		: study
 		},
 		dataType: 'json',
 		beforeSend: function(){

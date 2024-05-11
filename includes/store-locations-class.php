@@ -806,6 +806,7 @@ if ( !class_exists( 'Store_Locations' ) ) {
 			$attr = shortcode_atts( 
 				array(
 					'map' => 'yes',
+					'study' => '',
 				), $atts 
 			);
 
@@ -831,6 +832,9 @@ if ( !class_exists( 'Store_Locations' ) ) {
 							<input type="hidden" id="place_lat" value="">
 							<input type="hidden" id="place_lng" value="">
 							<input type="hidden" id="show_map" name="show_map" value="<?php echo (esc_attr($attr['map']) == 'yes') ? 'yes':'no';?>">
+							<?php if( esc_attr( $attr['study']) != '' ) : ?>
+								<input type="hidden" id="study" name="study" value="<?php echo esc_attr($attr['study']);?>">
+							<?php endif; ?>
 							<input type="hidden" id="language_code" value="<?php echo $language_code; ?>">
 						</form>
 						<?php  if( esc_attr( $attr['map']) == 'yes' ) : ?>
@@ -1124,6 +1128,17 @@ if ( !class_exists( 'Store_Locations' ) ) {
 							<input name="provider_name" type="text" id="provider_name"  value="<?php echo get_post_meta( $post->ID, 'provider_name', true );?>">
 						</td>
 					</tr>
+
+					<tr class="form-field">
+						<th scope="row">
+							<label for="study">
+								<?php esc_html_e('Study', 'store-location' );?>
+							</label>
+						</th>
+						<td>
+							<input name="study" type="text" id="study"  value="<?php echo get_post_meta( $post->ID, 'study', true );?>">
+						</td>
+					</tr>
 					
 				</tbody>
 			</table>              
@@ -1158,7 +1173,7 @@ if ( !class_exists( 'Store_Locations' ) ) {
 			update_post_meta( $post_id, 'phone_no', 		isset( $_POST['phone_no'] ) ? sanitize_text_field ( $_POST['phone_no'] ) : '' );
 			update_post_meta( $post_id, 'email', 		    isset( $_POST['email'] ) ? sanitize_text_field ( $_POST['email'] ) : '' );
 			update_post_meta( $post_id, 'provider_name', 	isset( $_POST['provider_name'] ) ? sanitize_text_field ( $_POST['provider_name'] ) : '' );
-
+			update_post_meta( $post_id, 'study', 	isset( $_POST['study'] ) ? sanitize_text_field ( $_POST['study'] ) : '' );
 		}
 		
 		public function search_location_near ( ) {
@@ -1167,6 +1182,7 @@ if ( !class_exists( 'Store_Locations' ) ) {
 			$lng 		= ! empty( $_POST['pos_lng'] ) ? $_POST['pos_lng'] : '';
 			$lang 		= ! empty( $_POST['lang'] ) ? $_POST['lang'] : '';
 			$show_map 	= $_POST['show_map'];
+			$study 		= ! empty( $_POST['study'] ) ? $_POST['study'] : '';
 
 			if ( ! empty( $lat ) && ! empty( $lng ) ) {
 				$locations = []; 
@@ -1205,16 +1221,26 @@ if ( !class_exists( 'Store_Locations' ) ) {
 					'post_type'			=> 'locations',
 					'post_status'		=> 'publish',
 					'posts_per_page'	=> -1,
+					'meta_query' 		=> array()
 				);
 				if ( $lang ) {
-					$args['meta_query'] = array(
-						array(
+					$args['meta_query'][] =	array(
 							'key' 		=> 'languages',
 							'value' 	=> $lang,
 							'compare' 	=> 'like'
-						),
 					);
 				}
+				if ( $study ) {
+					// remove ” or " from the study string
+					$study = str_replace( array( '”', '“', '"' ), '', $study );
+
+					$args['meta_query'][] = array(
+							'key' 		=> 'study',
+							'value' 	=> $study,
+							'compare' 	=> '='
+					);
+				}
+				
 				$the_query  = new WP_Query( $args );
 				if( $the_query->have_posts( ) ) {
 					while( $the_query->have_posts( ) ) {
@@ -1549,6 +1575,7 @@ if ( !class_exists( 'Store_Locations' ) ) {
 
 		    $columns['lang'] = 'Languages';
 		    $columns['country'] = 'Country';
+			$columns['study'] = 'Study';
 
 		    return $columns;
 		}
@@ -1581,6 +1608,12 @@ if ( !class_exists( 'Store_Locations' ) ) {
 		        		echo '<span style="color:red">not set</span>';
 		        	}
 		        break;
+				case 'study':
+					$study = get_post_meta ( $post_id, 'study', true );
+					if ( $study ) {
+						echo $study;
+					}
+				break;
 		    }
 		}
 
@@ -1613,6 +1646,20 @@ if ( !class_exists( 'Store_Locations' ) ) {
 			        					NOT EXISTS (SELECT * FROM $wpdb->postmeta WHERE $wpdb->postmeta.meta_key = 'country' AND $wpdb->postmeta.post_id=$wpdb->posts.ID ) 
 			        					OR
 			        					ID IN (SELECT post_id FROM $wpdb->postmeta WHERE $wpdb->postmeta.meta_key = 'country' AND meta_value = ' ' )
+			        )";
+		        }
+		        else{
+			        $where .= " AND ID IN (SELECT post_id FROM $wpdb->postmeta WHERE meta_value LIKE '$meta' )";
+			        // $where .= " AND ID IN (SELECT post_id FROM $wpdb->postmeta WHERE $wpdb->postmeta.meta_key = 'country' AND meta_value = ' ' )";
+		        }
+		    }
+			if ( isset( $_GET[ 'store-study' ] ) && !empty( $_GET[ 'store-study' ] ) ) {
+		        $meta = esc_sql( $_GET['store-study'] );
+		        if ( 'not-set' == $_GET[ 'store-study' ] ) {
+			        $where .= " AND ( 
+			        					NOT EXISTS (SELECT * FROM $wpdb->postmeta WHERE $wpdb->postmeta.meta_key = 'study' AND $wpdb->postmeta.post_id=$wpdb->posts.ID ) 
+			        					OR
+			        					ID IN (SELECT post_id FROM $wpdb->postmeta WHERE $wpdb->postmeta.meta_key = 'study' AND meta_value = ' ' )
 			        )";
 		        }
 		        else{
@@ -1657,6 +1704,18 @@ if ( !class_exists( 'Store_Locations' ) ) {
 				// var_dump_pre( $countries );
 			}
 
+			// Study
+			$studies_res = $wpdb->get_results ( "SELECT DISTINCT meta_value FROM $wpdb->postmeta pm, $wpdb->posts p WHERE meta_key = 'study' and pm.post_id=p.ID  and p.post_type='locations' ", ARRAY_A );
+
+			if ( is_array ( $studies_res ) ) {
+				$studies = array( 'not-set' );
+				foreach ( $studies_res as $value ) {
+					if ( !empty($value['meta_value']) ) {
+						$studies[] = $value['meta_value'];
+					}
+				}
+			}
+
         ?>
 	        <?php if ( ! empty( $active_languages ) ) : ?>
 	            <select name="store-language">
@@ -1695,6 +1754,27 @@ if ( !class_exists( 'Store_Locations' ) ) {
 		            <?php endforeach; ?>
 	            </select>
 	        <?php endif ?>
+
+			<?php if ( is_array ( $studies ) ) : ?>
+	            <select name="store-study">
+		            <option value="">
+		            	<?php _e( 'All Studies', 'store-location' ); ?>
+	            	</option>
+		            <?php $current_study = isset( $_GET['store-study'] ) ? $_GET['store-study'] : ''; ?>
+	                <?php foreach ( $studies as $value ) : ?>
+	                	<?php $selected = $value == $current_study ? ' selected="selected"' : '' ?>
+	                	<?php if ( 'not-set' == $value ): ?>
+		                	<option value="not-set" <?php echo $selected ?> >
+	                        	Not Set
+	                        </option>
+	                	<?php else : ?>	
+	                        <option value="<?php echo $value ?>" <?php echo $selected ?> >
+	                        	<?php echo $value; ?>
+	                        </option>
+	                	<?php endif ?>
+		            <?php endforeach; ?>
+	            </select>
+			<?php endif ?>	
 
             <?php
 	    }
