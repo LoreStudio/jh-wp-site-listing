@@ -1,12 +1,12 @@
 {
 	"name" : "Store Locations",
 	"slug" : "store-locations",
-	"version" : "3.6",
+	"version" : "3.7",
 	"download_url" : "https://github.com/LoreStudio/jh-wp-site-listing/archive/refs/heads/main.zip",
 	"last_updated" : "2024-04-02 08:40:00",
 	"sections" : {
 		"description" : "A custom locations management system for Jumo Health websites, that allows study participants to search and view participating study sites near them. [store-locations map=yes]",
 		"installation" : "Install zip file and click activate",
-		"changelog" : "<h4> v3.6 Bug fix for saving languages to a location</h4><h4> v3.5 import and export page ui improvements</h4><h4> v3.4 additional updates to the sync engine</h4><h4> v3.3 updated the version number for the description in WP</h4> <h4> v3.2 changed the update call to every 10 minutes, increasing performance</h4> <h4> v3.1 Can edit location languages from the bulk edit menu</h4> <h4> v3.0 Bug fix for locations on initial map render</h4> <h4> v2.9 adds the OneLinkJS exclusions</h4> <h4> v2.8 added the ability to import locations</h4> <h4>2.7 Fixed the search issue that was showing on the MenB sites.</h4><h4>v2.7 released on Setp 19th, 2023</h4><ul><li>Updated php file to resolve search bug</li></ul>"
+		"changelog" : "<h4> v3.7 Filter locations by study via shortcode</h4><h4> <h4> v3.6 Bug fix for saving languages to a location</h4><h4> v3.5 import and export page ui improvements</h4><h4> v3.4 additional updates to the sync engine</h4><h4> v3.3 updated the version number for the description in WP</h4> <h4> v3.2 changed the update call to every 10 minutes, increasing performance</h4> <h4> v3.1 Can edit location languages from the bulk edit menu</h4> <h4> v3.0 Bug fix for locations on initial map render</h4> <h4> v2.9 adds the OneLinkJS exclusions</h4> <h4> v2.8 added the ability to import locations</h4> <h4>2.7 Fixed the search issue that was showing on the MenB sites.</h4><h4>v2.7 released on Setp 19th, 2023</h4><ul><li>Updated php file to resolve search bug</li></ul>"
 	}
 }
