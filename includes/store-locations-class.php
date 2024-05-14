@@ -2018,7 +2018,7 @@ if ( !class_exists( 'Store_Locations' ) ) {
 						header('Content-Type: application/csv');
 						header('Content-Disposition: attachment; filename=location-export.csv');
 						$f = fopen('php://output', 'w');	
-						fputcsv($f, ["post_id","title","address1","address2","city","state","zip_code","country","website","phone","email","provider_name"], ",");
+						fputcsv($f, ["post_id","title","address1","address2","city","state","zip_code","country","website","phone","email","provider_name", "study"], ",");
 						foreach($explocations as $location) {
 							$post_id = $location->ID;
 							$title = $location->post_title;																
@@ -2035,7 +2035,7 @@ if ( !class_exists( 'Store_Locations' ) ) {
 							$study = get_post_meta($post_id, 'study', true);
 							
 							//fputcsv($f,[$post_id,"Test"]);
-							fputcsv($f, [$post_id,$title,$address1,$address2,$city,$state,$zip,$country,$website,$phone,$email,$provider_name], ",");
+							fputcsv($f, [$post_id,$title,$address1,$address2,$city,$state,$zip,$country,$website,$phone,$email,$provider_name, $study], ",");
 						}
 						
 						fclose($f);
