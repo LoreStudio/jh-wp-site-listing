@@ -1231,14 +1231,38 @@ if ( !class_exists( 'Store_Locations' ) ) {
 					);
 				}
 				if ( $study ) {
-					// remove ” or " from the study string
+					// Remove ” or " from the study string
 					$study = str_replace( array( '”', '“', '"' ), '', $study );
 
-					$args['meta_query'][] = array(
+					// Remove any white space from the study string
+					$study = trim( $study );
+
+					// Check if the study has a comma
+					if ( strpos( $study, ',' ) !== false ) {
+						$study = explode( ',', $study );
+
+						$args['meta_query'][] = array(
+							array(
+								'relation' => 'OR',
+								array(
+									'key' => 'study',
+									'value' => $study[0],
+									'compare' => 'LIKE',
+								),
+								array(
+									'key' => 'study',
+									'value' => $study[1],
+									'compare' => 'LIKE',
+								),
+							),
+						);
+					} else {
+						$args['meta_query'][] = array(
 							'key' 		=> 'study',
 							'value' 	=> $study,
-							'compare' 	=> '='
-					);
+							'compare' 	=> 'LIKE'
+						);
+					}
 				}
 				
 				$the_query  = new WP_Query( $args );
