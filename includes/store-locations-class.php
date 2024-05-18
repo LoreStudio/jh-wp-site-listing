@@ -1131,6 +1131,17 @@ if ( !class_exists( 'Store_Locations' ) ) {
 
 					<tr class="form-field">
 						<th scope="row">
+							<label for="provider_name">
+								<?php esc_html_e('Contact Name', 'store-location' );?>
+							</label>
+						</th>
+						<td>
+							<input name="contact_name" type="text" id="contact_name"  value="<?php echo get_post_meta( $post->ID, 'contact_name', true );?>">
+						</td>
+					</tr>
+
+					<tr class="form-field">
+						<th scope="row">
 							<label for="study">
 								<?php esc_html_e('Study', 'store-location' );?>
 							</label>
@@ -1173,6 +1184,7 @@ if ( !class_exists( 'Store_Locations' ) ) {
 			update_post_meta( $post_id, 'phone_no', 		isset( $_POST['phone_no'] ) ? sanitize_text_field ( $_POST['phone_no'] ) : '' );
 			update_post_meta( $post_id, 'email', 		    isset( $_POST['email'] ) ? sanitize_text_field ( $_POST['email'] ) : '' );
 			update_post_meta( $post_id, 'provider_name', 	isset( $_POST['provider_name'] ) ? sanitize_text_field ( $_POST['provider_name'] ) : '' );
+			update_post_meta( $post_id, 'contact_name', 	isset( $_POST['contact_name'] ) ? sanitize_text_field ( $_POST['contact_name'] ) : '' );
 			update_post_meta( $post_id, 'study', 	isset( $_POST['study'] ) ? sanitize_text_field ( $_POST['study'] ) : '' );
 		}
 		
@@ -1930,6 +1942,7 @@ if ( !class_exists( 'Store_Locations' ) ) {
 										$phone = ($line["phone"]) ? $line["phone"] : ""; 
 										$email = ($line["email"]) ? $line["email"] : ""; 
 										$provider_name = ($line["provider_name"]) ? $line["provider_name"] : "";
+										$contact_name = ($line["contact_name"]) ? $line["contact_name"] : "";
 										$study = ($line["study"]) ? $line["study"] : "";
 
 										$lat = 0;
@@ -2000,6 +2013,7 @@ if ( !class_exists( 'Store_Locations' ) ) {
 											update_post_meta( $post_id, 'phone_no', 		sanitize_text_field ( $phone ) );
 											update_post_meta( $post_id, 'email', 		    sanitize_text_field ( $email ) );
 											update_post_meta( $post_id, 'provider_name', 	sanitize_text_field ( $provider_name ) );
+											update_post_meta( $post_id, 'contact_name', 	sanitize_text_field ( $contact_name ) );
 											update_post_meta( $post_id, 'study', 		    sanitize_text_field ( $study ) );
 
 											if($lat && $long) {
@@ -2042,7 +2056,7 @@ if ( !class_exists( 'Store_Locations' ) ) {
 						header('Content-Type: application/csv');
 						header('Content-Disposition: attachment; filename=location-export.csv');
 						$f = fopen('php://output', 'w');	
-						fputcsv($f, ["post_id","title","address1","address2","city","state","zip_code","country","website","phone","email","provider_name", "study"], ",");
+						fputcsv($f, ["post_id","title","address1","address2","city","state","zip_code","country","website","phone","email","provider_name", "contact_name", "study"], ",");
 						foreach($explocations as $location) {
 							$post_id = $location->ID;
 							$title = $location->post_title;																
@@ -2056,10 +2070,11 @@ if ( !class_exists( 'Store_Locations' ) ) {
 							$phone = get_post_meta($post_id, 'phone_no', true);
 							$email = get_post_meta($post_id, 'email', true); 
 							$provider_name = get_post_meta($post_id, 'provider_name', true);
+							$contact_name = get_post_meta($post_id, 'contact_name', true);
 							$study = get_post_meta($post_id, 'study', true);
 							
 							//fputcsv($f,[$post_id,"Test"]);
-							fputcsv($f, [$post_id,$title,$address1,$address2,$city,$state,$zip,$country,$website,$phone,$email,$provider_name, $study], ",");
+							fputcsv($f, [$post_id,$title,$address1,$address2,$city,$state,$zip,$country,$website,$phone,$email,$provider_name, $contact_name, $study], ",");
 						}
 						
 						fclose($f);
