@@ -3,7 +3,7 @@
 	"slug" : "store-locations",
 	"version" : "4.0",
 	"download_url" : "https://github.com/LoreStudio/jh-wp-site-listing/archive/refs/heads/main.zip",
-	"last_updated" : "2024-05-17 17:14:00",
+	"last_updated" : "2024-05-24 08:55:00",
 	"sections" : {
 		"description" : "A custom locations management system for Jumo Health websites, that allows study participants to search and view participating study sites near them. [store-locations map=yes]",
 		"installation" : "Install zip file and click activate",
