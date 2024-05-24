@@ -1525,7 +1525,7 @@ if ( !class_exists( 'Store_Locations' ) ) {
 																<?php if ( ! empty ( $contact_name ) ) : ?>
 																	<span>
 																		<?php echo $contact_name;?>
-																	</span>
+																	</span><br/>
 																<?php endif; ?>
 																<?php if ( ! empty( $email ) ) : ?>
 																	<a href="mailto:<?php echo esc_html( $email ); ?>">
