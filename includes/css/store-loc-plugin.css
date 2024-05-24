@@ -288,7 +288,8 @@
     top: -36px;
     background: #fff;
     width: 97%;
-    padding: 5px 0;
+    padding: 10px 0;
+    border-bottom: 1px solid #EAEAEA;
 }
 
 .store-info-container .store-locations-list-nav h4 {
