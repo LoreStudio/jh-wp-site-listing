@@ -28,6 +28,24 @@ jQuery(document).ready(function($) {
 		search_location_near_by();
 		return false;
 	});
+
+	// Make location nav sticky
+	let storeInfoContainer = document.querySelector('.store-info-container.no-map');
+	let storeLocationNav = document.querySelector('.store-locations-list-nav');
+
+	if (storeInfoContainer && storeLocationNav) {
+		let storeInfoContainerTop = storeInfoContainer.offsetTop;
+
+		storeInfoContainer.onscroll = function() {
+			// If scroll position is 120 or more, toggle sticky class
+			if (storeInfoContainer.scrollTop > 97) {
+				storeLocationNav.classList.add('sticky');
+			} else {
+				storeLocationNav.classList.remove('sticky');
+			}
+		}
+	}
+
 	
 });
 var markers = [];

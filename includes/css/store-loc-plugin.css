@@ -271,6 +271,28 @@
 
 .store-locations-list {
 	background:#fff;
+    position: relative;
+}
+
+.store-info-container .store-locations-list-nav {
+    display: none;
+    grid-template-columns: repeat(4, 308px);
+    position: relative;
+    z-index: 100;
+    margin-top: 35px;
+    margin-bottom: -60px;
+}
+
+.store-info-container .store-locations-list-nav.sticky {
+    position: absolute;
+    top: -36px;
+    background: #fff;
+    width: 97%;
+    padding: 5px 0;
+}
+
+.store-info-container .store-locations-list-nav h4 {
+    margin: 0;
 }
 
 .store-info-container .store-location-name {
@@ -476,8 +498,15 @@ span.store-location-provider {
 	
 	.store-info-container.no-map #ajax_results_wrapper {
 		margin-top: 20px;
-	}	
+	}
+    
+    .store-info-container .store-locations-list {
+        padding-top:55px;
+    }
 	
+    .store-info-container .store-locations-list-nav {
+        display: grid;
+    }
 }
 
 @media (max-width:959px){

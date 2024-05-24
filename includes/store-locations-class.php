@@ -849,6 +849,14 @@ if ( !class_exists( 'Store_Locations' ) ) {
 						<?php _e( 'Showing', 'store-location' )?> 
 						<span id="found-results"> 0</span> <?php _e( 'Results Near You', 'store-location' )?>
 					</h5>
+					<?php if( esc_attr( $attr['map'] ) == 'no' ) : ?>
+						<div class="store-locations-list-nav">
+							<h4>Study Site</h4>
+							<h4>Study Provider</h4>
+							<h4>Address</h4>
+							<h4>Contact</h4>
+						</div>
+				<?php endif; ?>
 					<div class="store-locations-list" id="ajax_results_wrapper">
 					</div>
 				</div>
@@ -1377,6 +1385,7 @@ if ( !class_exists( 'Store_Locations' ) ) {
 					$phone = ( get_post_meta( $loc_id, "phone_no", true ) ) ? get_post_meta( $loc_id, "phone_no", true ) : '';
 					$email = ( get_post_meta( $loc_id, "email", true ) ) ? get_post_meta( $loc_id, "email", true ) : '';
 					$provider_name = ( get_post_meta( $loc_id, "provider_name",  true ) ) ? get_post_meta( $loc_id, "provider_name", true ) : '';
+					$contact_name = ( get_post_meta( $loc_id, "contact_name",  true ) ) ? get_post_meta( $loc_id, "contact_name", true ) : '';
 					$response_loc[] = array(
 						'ID'				=> $i,
 						'name' 				=> $location['post_title'],
@@ -1387,6 +1396,7 @@ if ( !class_exists( 'Store_Locations' ) ) {
 						'email' 			=> $email,
 						'show_direction'	=> $this->show_direction,
 						'provider_name'		=> $provider_name,
+						'contact_name'		=> $contact_name,
 						'direction'			=> __( 'Get directions', 'store-location' )
 					);
 					$i++;
@@ -1414,6 +1424,7 @@ if ( !class_exists( 'Store_Locations' ) ) {
 						$phone 			= ( get_post_meta ( $loc_id, "phone_no", true ) ) ? get_post_meta ( $loc_id, "phone_no", true ) : '';
 						$email 			= ( get_post_meta ( $loc_id, "email", true ) ) ? get_post_meta ( $loc_id, "email", true ) : '';
 						$provider_name 	= ( get_post_meta ( $loc_id, "provider_name", true ) ) ? get_post_meta ( $loc_id, "provider_name", true ) : '';
+						$contact_name 	= ( get_post_meta ( $loc_id, "contact_name", true ) ) ? get_post_meta ( $loc_id, "contact_name", true ) : '';
 						
 						$address 		= '';
 						$address_1 		= $location['store_address'];
@@ -1511,6 +1522,11 @@ if ( !class_exists( 'Store_Locations' ) ) {
 													<div class="uncont">
 														<div class="uncode_text_column">
 															<p>
+																<?php if ( ! empty ( $contact_name ) ) : ?>
+																	<span>
+																		<?php echo $contact_name;?>
+																	</span>
+																<?php endif; ?>
 																<?php if ( ! empty( $email ) ) : ?>
 																	<a href="mailto:<?php echo esc_html( $email ); ?>">
 																		<?php echo esc_html( $email ); ?>
@@ -1550,6 +1566,13 @@ if ( !class_exists( 'Store_Locations' ) ) {
 							<address class="store-location-address">
 								<?php echo $address;?>
 							</address>
+							<?php if ( ! empty ( $contact_name ) ) : ?>
+								<div class="store-location-phone">
+									<span>
+										<?php echo $contact_name;?>
+									</span>
+								</div>
+							<?php endif; ?>
 							<?php if ( ! empty ( $phone ) ) : ?>
 								<div class="store-location-phone">
 									<a href="tel:<?php echo $phone;?>">
