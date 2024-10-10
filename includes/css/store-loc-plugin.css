@@ -227,6 +227,7 @@
 	width: 100%;
 	background: url(../icons/icon-search.png) no-repeat 25px 50% #F9FAFA;
     background-size: 26px 26px;
+    background-repeat: no-repeat;
 	box-shadow: none;
 	border-radius: 20px;
 	border: none;

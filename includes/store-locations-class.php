@@ -1504,11 +1504,14 @@ if ( !class_exists( 'Store_Locations' ) ) {
 																<br>
 																<?php echo $city;?>, <?php echo $state;?> <?php echo $zipcode;?>
 															</p>
+
+															<?php if ( $this->show_direction ) : ?>
 															<p>
 																<a href="https://www.google.com/maps?q=<?php echo $directions; ?>" target="_blank">
 																	<?php _e( 'Get Directions', 'store-location' );?>
 																</a>
 															</p>
+															<?php endif; ?>
 														</div>
 													</div>
 												</div>
