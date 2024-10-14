@@ -1178,6 +1178,11 @@ if ( !class_exists( 'Store_Locations' ) ) {
 				return;
 			}
 
+			// If we are doing a quick edit
+			if ( isset( $_REQUEST['action'] ) && 'inline-save' == $_REQUEST['action'] ) {
+				return;
+			}
+
 			update_post_meta( $post_id, 'language_code', 	isset( $_POST['language_code'] ) ? strtolower( sanitize_text_field ( $_POST['language_code'] ) ) : '' );
 			update_post_meta( $post_id, 'languages', 		isset( $_POST['languages'] ) ? implode( ',', (array)$_POST['languages'] ) : '' );
 			update_post_meta( $post_id, 'country', 			isset( $_POST['country'] ) ? sanitize_text_field ( $_POST['country'] ) : '' );
