@@ -851,10 +851,10 @@ if ( !class_exists( 'Store_Locations' ) ) {
 					</h5>
 					<?php if( esc_attr( $attr['map'] ) == 'no' ) : ?>
 						<div class="store-locations-list-nav">
-							<h4>Study Site</h4>
-							<h4>Study Provider</h4>
-							<h4>Address</h4>
-							<h4>Contact</h4>
+							<h4><?php esc_html_e( 'Study Site', 'store-location' );?></h4>
+							<h4><?php esc_html_e( 'Study Provider', 'store-location' );?></h4>
+							<h4><?php esc_html_e( 'Address', 'store-location' );?></h4>
+							<h4><?php esc_html_e( 'Contact', 'store-location' );?></h4>
 						</div>
 				<?php endif; ?>
 					<div class="store-locations-list" id="ajax_results_wrapper">
