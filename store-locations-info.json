@@ -1,7 +1,7 @@
 {
 	"name" : "Store Locations",
 	"slug" : "store-locations",
-	"version" : "4.5",
+	"version" : "4.5.1",
 	"download_url" : "https://github.com/LoreStudio/jh-wp-site-listing/archive/refs/heads/main.zip",
 	"last_updated" : "2024-10-14 11:19:00",
 	"sections" : {
