@@ -2,13 +2,13 @@
 /**
  * @wordpress-plugin
  * Plugin Name: Study Site Listing
- * Description: A custom locations management system, that allows patients to search and view participating study sites near them. [store-locations map=yes]
- * Version: 4.5.1
+ * Description: A custom location management system that allows patients to search and view participating study sites near them. [store-locations map=yes]
+ * Version: 4.5.2
  * Text Domain: store-location
  */
 
 
-define( 'LOCATION_PLUGIN_VERSION', '4.5' );
+define( 'LOCATION_PLUGIN_VERSION', '4.5.2' );
 define( 'LOCATION_DIR_URI', plugin_dir_url( __FILE__ ));
 define( 'LOCATION_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'DISTANCE_MILES', 50);
@@ -17,7 +17,7 @@ define( 'DISTANCE_MILES', 50);
 /**
  * Plugin page links
  */
-function store_location_plugin_links( $links ) {
+function store_location_plugin_links( $links ): array {
 
 	$plugin_links = array(
 		'<a href="' . admin_url( 'admin.php?page=set-store-loc-setting-page' ) . '">' . __( 'Settings', 'store-location' ) . '</a>',

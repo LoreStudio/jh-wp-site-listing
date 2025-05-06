@@ -1,22 +1,20 @@
 <?php
-/*ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);*/
 /**
- * The file contains all the plugin related functions
+ * The file contains all the plugin-related functions
  */
+
 if ( ! class_exists( 'Store_Locations' ) ) {
 
 	class Store_Locations {
 
-		var $show_direction = false;
+		var bool $show_direction = false;
 
-		public $plugin_slug;
-		public $version;
-		public $cache_key;
-		public $cache_allowed;
+		public string $plugin_slug;
+		public string $version;
+		public string $cache_key;
+		public bool $cache_allowed;
 
-		var $country_list = array(
+		var array $country_list = array(
 			"AF" => "Afghanistan",
 			"AL" => "Albania",
 			"DZ" => "Algeria",
@@ -283,7 +281,7 @@ if ( ! class_exists( 'Store_Locations' ) ) {
 			"AX" => "Åland Islands",
 		);
 
-		var $flags_array = array(
+		var array $flags_array = array(
 			'sq'      => array(
 				'sq',
 				'sq.svg',
@@ -630,7 +628,7 @@ if ( ! class_exists( 'Store_Locations' ) ) {
 
 		public function __construct() {
 
-			if ( 'yes' == esc_attr( get_option( 'show_direction_link' ) ) ) {
+			if ( 'yes' === get_option( 'show_direction_link', 'yes' ) ) {
 				$this->show_direction = true;
 			}
 
@@ -648,8 +646,8 @@ if ( ! class_exists( 'Store_Locations' ) ) {
 
 			add_action( 'admin_menu', [ $this, 'store_loc_setting_page' ] );
 
+			//shortcodes
 			add_shortcode( 'language', [ $this, 'get_language_shortcode' ] );
-
 			add_shortcode( 'store-locations', [ $this, 'store_locations_detail' ] );
 
 			add_action( 'add_meta_boxes', [ $this, 'address_location_custom_box' ] );
@@ -661,8 +659,8 @@ if ( ! class_exists( 'Store_Locations' ) ) {
 			add_filter( 'manage_locations_posts_columns', [ $this, 'columns_locations' ] );
 			add_action( 'manage_locations_posts_custom_column', [ $this, 'columns_locations_data' ], 10, 2 );
 
-			add_action( 'load-edit.php', [ $this, 'load_custom_filter_wpse_94630' ] );
-			add_action( 'restrict_manage_posts', [ $this, 'wpse45436_admin_posts_filter_restrict_manage_posts' ], 10, 1 );
+			add_action( 'load-edit.php', [ $this, 'load_edit' ] );
+			add_action( 'restrict_manage_posts', [ $this, 'restrict_manage_posts' ] );
 
 			// Update functions
 			add_filter( 'plugins_api', [ $this, 'update_info' ], 20, 3 );
@@ -674,52 +672,54 @@ if ( ! class_exists( 'Store_Locations' ) ) {
 			add_action( 'admin_menu', [ $this, 'location_export_page' ] );
 			add_action( 'admin_init', [ $this, 'location_export_request' ] );
 
-			// Add language feild to bulk edit
+			// Add language field to bulk edit
 			add_action( 'bulk_edit_custom_box', array( $this, 'quick_edit_custom_box' ), 10, 2 );
 		}
 
-		// front end enque scripts
-		public function store_locations_scripts() {
-
+		// front end enqueue scripts
+		public function store_locations_scripts(): void {
 			wp_enqueue_script( 'jquery' );
-			wp_enqueue_style( 'store-loc-style', LOCATION_DIR_URI . 'includes/css/store-loc-plugin.css', array(), '1.0.0', 'all' );
-			//wp_enqueue_script( 'store-loc-js', LOCATION_DIR_URI . 'includes/js/store-loc.js', array(), '1.0.0', true );	
-			wp_register_script( "store-loc-js", LOCATION_DIR_URI . 'includes/js/store-loc.js', array(), "1.0", false );
-			$apikey = esc_attr( get_option( 'gmap_api_key' ) );
+			wp_enqueue_style( 'store-loc-style', LOCATION_DIR_URI . 'includes/css/store-loc-plugin.css', array(), $this->version );
+
+			wp_register_script( "store-loc-js", LOCATION_DIR_URI . 'includes/js/store-loc.js', array(), $this->version, false );
+
+			$apikey = get_option( 'gmap_api_key' );
+
 			if ( ! empty( $apikey ) ) {
 				$map_api = '//maps.googleapis.com/maps/api/js?key=' . $apikey . '&callback=initgMap&libraries=places';
 				wp_register_script( 'store-google-map', $map_api );
 			}
+
 			// define some local variable
 			$local_variables = [
 				'ajax_url' => admin_url( 'admin-ajax.php' ),
 				'img_dir'  => LOCATION_DIR_URI . 'images/',
 			];
+
 			wp_localize_script( 'store-loc-js', 'front_object', $local_variables );
 		}
 
-		// admin scripts
-		public function admin_store_locations_scripts() {
-			$apikey = esc_attr( get_option( 'gmap_api_key' ) );
+		public function admin_store_locations_scripts(): void {
+			$apikey = get_option( 'gmap_api_key' );
 
 			if ( ! empty( $apikey ) ) {
 				$map_api = '//maps.googleapis.com/maps/api/js?key=' . $apikey;
 				wp_register_script( 'store-google-map', $map_api );
 				wp_enqueue_script( 'store-google-map' );
 			}
-			wp_enqueue_script( 'admin-store-js', LOCATION_DIR_URI . 'admin/js/admin-store.js', array(), '1.0.0', true );
+
+			wp_enqueue_script( 'admin-store-js', LOCATION_DIR_URI . 'admin/js/admin-store.js', array(), $this->version, true );
 		}
 
-		// admin styles
-		public function admin_store_locations_styles() {
-			wp_enqueue_style( 'store-loc-admin-style', LOCATION_DIR_URI . 'admin/css/styles.css', array(), '1.0.0', 'all' );
+		public function admin_store_locations_styles(): void {
+			wp_enqueue_style( 'store-loc-admin-style', LOCATION_DIR_URI . 'admin/css/styles.css', array(), $this->version );
 		}
 
 		function get_language_shortcode() {
 			return apply_filters( 'wpml_current_language', null );
 		}
 
-		public function location_register_post_types() {
+		public function location_register_post_types(): void {
 
 			$labels = array(
 				'name'               => _x( 'Locations', '', 'store-location' ),
@@ -758,8 +758,8 @@ if ( ! class_exists( 'Store_Locations' ) ) {
 			register_post_type( 'locations', $args );
 		}
 
-		// this is menu setting page
-		public function store_loc_setting_page() {
+		// this is a menu setting page
+		public function store_loc_setting_page(): void {
 
 			add_menu_page( 'Location Settings', 'Location Settings', 'administrator', 'set-store-loc-setting-page', array(
 				$this,
@@ -769,7 +769,7 @@ if ( ! class_exists( 'Store_Locations' ) ) {
 		}
 
 		// set the hours setting for store
-		public function set_store_loc_setting_page() {
+		public function set_store_loc_setting_page(): void {
 			// check capability
 			if ( current_user_can( 'manage_options' ) ) {
 				require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/store-loc-settings.php';
@@ -780,7 +780,7 @@ if ( ! class_exists( 'Store_Locations' ) ) {
 			}
 		}
 
-		public function is_wpml_active() {
+		public function is_wpml_active(): bool {
 
 			$is_wpml_active = false;
 
@@ -793,23 +793,21 @@ if ( ! class_exists( 'Store_Locations' ) ) {
 
 		public function get_language_code() {
 
-			// include_once ABSPATH . 'wp-admin/includes/plugin.php';
 			$language_code = 'en';
+
 			if ( $this->is_wpml_active() ) {
 				$language_code = apply_filters( 'wpml_current_language', null );
-				// var_dump_pre( 'wpml active' );
 			} else {
-				$language_code = isset( $_GET['lang'] ) && ! empty( $_GET['lang'] ) ? sanitize_text_field( $_GET['lang'] ) : $language_code;
-				// var_dump_pre( 'no wpml' );
+				$language_code = ! empty( $_GET['lang'] ) ? sanitize_text_field( $_GET['lang'] ) : $language_code;
 			}
-
-			// var_dump_pre( $language_code );
 
 			return $language_code;
 
 		}
 
-		public function store_locations_detail( $atts = array() ) {
+		public function store_locations_detail( $atts = array() ): bool|string {
+			wp_enqueue_script( 'store-loc-js' );
+			wp_enqueue_script( 'store-google-map' );
 
 			$attr = shortcode_atts( array(
 				'map'   => 'yes',
@@ -819,122 +817,83 @@ if ( ! class_exists( 'Store_Locations' ) ) {
 			$language_code = $this->get_language_code();
 
 			ob_start();
-			// var_dump_pre( $language_code );
-			?>
-			<?php if ( esc_attr( $attr['map'] ) == 'yes' ) : ?>
+
+			if ( $attr['map'] === 'yes' ) { ?>
                 <script>
-                    var mapStyle = [
-						<?php echo get_option( 'map_json_style' );?>
-                    ];
-                    var marker_icon = '<?php echo get_option( 'gmap_marker_url' ); ?>';
+                    const mapStyle = [<?php echo get_option( 'map_json_style' );?>];
+                    const marker_icon = '<?php echo get_option( 'gmap_marker_url' ); ?>';
                 </script>
-			<?php endif; ?>
-            <div class="store-info-container <?php echo ( esc_attr( $attr['map'] ) == 'no' ) ? 'no-map' : ''; ?>">
+			<?php } ?>
+            <div class="store-info-container <?php echo esc_attr( $attr['map'] === 'no' ? 'no-map' : '' ); ?>">
                 <div class="store-locations">
                     <div class="store-locations-search OneLinkTx">
                         <form role="search" class="store-search-form">
+                            <label for="search-text"></label>
                             <input type="text" value name="search-text" id="search-text"
                                    placeholder="<?php _e( 'Enter a location', 'store-location' ); ?>">
                             <input type="image" id="search-btn" alt="Search" src="<?php echo LOCATION_DIR_URI . 'images/icon-arrow-right.svg' ?>">
                             <input type="hidden" id="place_lat" value="">
                             <input type="hidden" id="place_lng" value="">
                             <input type="hidden" id="show_map" name="show_map"
-                                   value="<?php echo ( esc_attr( $attr['map'] ) == 'yes' ) ? 'yes' : 'no'; ?>">
-							<?php if ( esc_attr( $attr['study'] ) != '' ) : ?>
+                                   value="<?php echo esc_attr( $attr['map'] === 'yes' ? 'yes' : 'no' ); ?>">
+							<?php if ( $attr['study'] ) { ?>
                                 <input type="hidden" id="study" name="study" value="<?php echo esc_attr( $attr['study'] ); ?>">
-							<?php endif; ?>
+							<?php } ?>
                             <input type="hidden" id="language_code" value="<?php echo $language_code; ?>">
                         </form>
-						<?php if ( esc_attr( $attr['map'] ) == 'yes' ) : ?>
+						<?php if ( $attr['map'] === 'yes' ) { ?>
                             <div class="my-location">
                                 <a href="javascript:void(0);" onClick="getuser_location();">
 									<?php _e( 'Use my Location', 'store-location' ); ?>
                                 </a>
                             </div>
-						<?php endif; ?>
+						<?php } ?>
                     </div>
                     <h5 class="store-locations-result-info OneLinkTx">
 						<?php _e( 'Showing', 'store-location' ) ?>
                         <span id="found-results"> 0</span> <?php _e( 'Results Near You', 'store-location' ) ?>
                     </h5>
-					<?php if ( esc_attr( $attr['map'] ) == 'no' ) : ?>
+					<?php if ( $attr['map'] === 'no' ) { ?>
                         <div class="store-locations-list-nav">
                             <h4><?php esc_html_e( 'Study Site', 'store-location' ); ?></h4>
                             <h4><?php esc_html_e( 'Study Provider', 'store-location' ); ?></h4>
                             <h4><?php esc_html_e( 'Address', 'store-location' ); ?></h4>
                             <h4><?php esc_html_e( 'Contact', 'store-location' ); ?></h4>
                         </div>
-					<?php endif; ?>
+					<?php } ?>
                     <div class="store-locations-list" id="ajax_results_wrapper">
                     </div>
                 </div>
-				<?php if ( esc_attr( $attr['map'] ) == 'yes' ) : ?>
+				<?php if ( $attr['map'] === 'yes' ) { ?>
                     <div class="store-map-wrapper">
                         <div id="store-map">
                         </div>
                     </div>
-				<?php endif; ?>
+				<?php } ?>
             </div>
 			<?php
-
-			wp_enqueue_script( 'store-loc-js' );
-			wp_enqueue_script( 'store-google-map' );
 
 			return ob_get_clean();
 		}
 
-		public function address_location_custom_box() {
+		public function address_location_custom_box(): void {
 			$screens = [ 'locations' ];
 			foreach ( $screens as $screen ) {
-				add_meta_box( 'store_location_box_id',                 // Unique ID
-					'Address Information',      // Box title
-					[ $this, 'address_custom_box_html' ],  // Content callback, must be of type callable
-					$screen                            // Post type
-				);
+				add_meta_box( 'store_location_box_id', 'Address Information', [ $this, 'address_custom_box_html' ], $screen );
 			}
 		}
 
-		public function address_custom_box_html( $post ) {
+		public function address_custom_box_html( $post ): void {
 			global $post;
 			?>
             <style>
                 .form-table td {
-                    padding: 0px;
+                    padding: 0;
                 }
             </style>
 
             <table class="form-table" role="presentation">
                 <tbody>
-				<?php /*
-					<tr class="form-field form-required">
-						<th scope="row">
-							<label for="store_language">
-								<?php esc_html_e( 'Language', 'store-location' );?>
-							</label>
-						</th>
-						<td>
-							<!-- wpml language dropdown -->
-							<?php $language_code = get_post_meta( $post->ID, 'language_code', true );?>
-							<?php if ( $this->is_wpml_active( ) ) : ?>
-								<select name="language_code">
-									<?php if ( function_exists( 'icl_get_languages' ) ) : ?>
-										<?php 
-											$langs = icl_get_languages( 'skip_missing=0' ); 
-											$language_code = get_post_meta( $post->ID, 'language_code', true );
-										?>
-										<?php foreach ( $langs as $lang ) : ?>
-											<option value="<?php echo $lang['language_code']; ?>" <?php if ( $language_code == $lang['language_code'] ) { echo 'selected="selected"'; } ?>>
-												<?php echo $lang["native_name"]; ?> ( <?php echo $lang['language_code']; ?> )
-											</option> 
-										<?php endforeach; ?>
-									<?php endif; ?>
-								</select>
-							<?php else : ?>
-								<input name="language_code" type="text" id="language_code" value="<?php echo $language_code; ?>">
-							<?php endif; ?>
-						</td>
-					</tr>
-					*/ ?>
                 <tr class="form-field form-required">
                     <th scope="row">
                         <label for="store_language">
@@ -942,72 +901,60 @@ if ( ! class_exists( 'Store_Locations' ) ) {
                         </label>
                     </th>
                     <td>
-                        <!-- wpml language dropdown -->
-						<?php $language_code = get_post_meta( $post->ID, 'languages', true ); ?>
-						<?php if ( $this->is_wpml_active() ) : ?>
-							<?php if ( function_exists( 'icl_get_languages' ) ) : ?>
-								<?php
-								$langs = icl_get_languages( 'skip_missing=0' );
-								// var_dump_pre( $langs );
+						<?php
+						if ( $this->is_wpml_active() ) {
+							$langs = apply_filters( 'wpml_active_languages', null, [
+								'skip_missing' => 0
+							] );
 
-								$language_code = explode( ',', get_post_meta( $post->ID, 'languages', true ) );
-								// var_dump_pre( $language_code );
-								?>
-                                <ul class="available-languages">
-									<?php foreach ( $langs as $lang ) : ?>
-                                        <li class="<?php if ( in_array( $lang['language_code'], $language_code ) ) {
-											echo '_active';
-										} ?>">
-                                            <label for="wpml-language-<?php echo $lang['language_code']; ?>">
-                                                <input type="checkbox" name="languages[]" id="wpml-language-<?php echo $lang['language_code']; ?>"
-                                                       value="<?php echo $lang['language_code']; ?>" <?php if ( in_array( $lang['language_code'], $language_code ) ) {
-													echo 'checked="checked"';
-												} ?>>
-                                                <img width="18" height="12" src="<?php echo $lang['country_flag_url']; ?>"
-                                                     alt="Flag for <?php echo $lang['language_code']; ?>">
-												<?php echo $lang["native_name"]; ?> ( <?php echo $lang['language_code']; ?> )
-                                            </label>
-                                        </li>
-									<?php endforeach ?>
-                                </ul>
-							<?php endif; ?>
-						<?php else : ?>
-							<?php if ( ! $this->is_wpml_active() ) : ?>
-								<?php
-								$flags_dir_url = LOCATION_DIR_URI . 'images/flags/';
-
-								$active_languages = get_option( 'store-loc-active-languages' );
-								// var_dump_pre( $active_languages );
-
-								$active_languages_array = explode( ',', $active_languages );
-								// var_dump_pre( $active_languages_array );
-
-								$language_code = explode( ',', get_post_meta( $post->ID, 'languages', true ) );
-								// var_dump_pre( $language_code );
-
-								?>
-                                <ul class="available-languages">
-									<?php foreach ( $this->flags_array as $value ) : ?>
-										<?php if ( ! in_array( $value[0], $active_languages_array ) ) {
-											continue;
-										} ?>
-                                        <li class="<?php if ( in_array( $value[0], $language_code ) ) {
-											echo '_active';
-										} ?>">
-                                            <label for="wpml-language-<?php echo $value[0]; ?>">
-                                                <input type="checkbox" name="languages[]" id="wpml-language-<?php echo $value[0]; ?>"
-                                                       value="<?php echo $value[0]; ?>" <?php if ( in_array( $value[0], $language_code ) ) {
-													echo 'checked';
-												} ?>>
-                                                <img width="18" height="12" src="<?php echo $flags_dir_url . $value[1]; ?>"
-                                                     alt="Flag for <?php echo $value[0]; ?>">
-												<?php echo $value[2]; ?> ( <?php echo $value[0]; ?> )
-                                            </label>
-                                        </li>
-									<?php endforeach ?>
-                                </ul>
-							<?php endif ?>
-						<?php endif; ?>
+							$language_code = explode( ',', get_post_meta( $post->ID, 'languages', true ) );
+							?>
+                            <ul class="available-languages">
+								<?php foreach ( $langs as $lang ) { ?>
+                                    <li class="<?php if ( in_array( $lang['language_code'], $language_code ) ) {
+										echo '_active';
+									} ?>">
+                                        <label for="wpml-language-<?php echo $lang['language_code']; ?>">
+                                            <input type="checkbox" name="languages[]"
+                                                   id="wpml-language-<?php echo $lang['language_code']; ?>"
+                                                   value="<?php echo $lang['language_code']; ?>"
+												<?php checked( in_array( $lang['language_code'], $language_code ) ); ?>
+                                            >
+                                            <img width="18" height="12" src="<?php echo $lang['country_flag_url']; ?>"
+                                                 alt="Flag for <?php echo $lang['language_code']; ?>">
+											<?php echo $lang["native_name"]; ?> ( <?php echo $lang['language_code']; ?> )
+                                        </label>
+                                    </li>
+								<?php } ?>
+                            </ul>
+						<?php } else {
+							$flags_dir_url          = LOCATION_DIR_URI . 'images/flags/';
+							$active_languages       = get_option( 'store-loc-active-languages' );
+							$active_languages_array = explode( ',', $active_languages );
+							$language_code          = explode( ',', get_post_meta( $post->ID, 'languages', true ) );
+							?>
+                            <ul class="available-languages">
+								<?php foreach ( $this->flags_array as $value ) {
+									if ( ! in_array( $value[0], $active_languages_array ) ) {
+										continue;
+									} ?>
+                                    <li class="<?php if ( in_array( $value[0], $language_code ) ) {
+										echo '_active';
+									} ?>">
+                                        <label for="wpml-language-<?php echo $value[0]; ?>">
+                                            <input type="checkbox" name="languages[]"
+                                                   id="wpml-language-<?php echo $value[0]; ?>"
+                                                   value="<?php echo $value[0]; ?>"
+												<?php checked( in_array( $value[0], $language_code ) ); ?>
+                                            >
+                                            <img width="18" height="12" src="<?php echo $flags_dir_url . $value[1]; ?>"
+                                                 alt="Flag for <?php echo $value[0]; ?>">
+											<?php echo $value[2]; ?> ( <?php echo $value[0]; ?> )
+                                        </label>
+                                    </li>
+								<?php } ?>
+                            </ul>
+						<?php } ?>
                     </td>
                 </tr>
                 <tr class="form-field form-required">
@@ -1064,29 +1011,22 @@ if ( ! class_exists( 'Store_Locations' ) ) {
                 </tr>
                 <tr class="form-field">
                     <th scope="row">
-                        <label for="store_zipcode">
+                        <label for="store-country">
 							<?php esc_html_e( 'Country', 'store-location' ); ?>
                         </label>
                     </th>
                     <td>
-						<?php
-						$country = get_post_meta( $post->ID, 'country', true );
-						// var_dump_pre( $country );
-						?>
+						<?php $country = get_post_meta( $post->ID, 'country', true ); ?>
                         <select name="country" id="store-country">
-                            <option value="" <?php if ( in_array( $country, $this->country_list ) ) {
-								echo 'selected';
-							} ?>>
+                            <option value="" <?php selected( ! in_array( $country, $this->country_list ) ) ?>>
                                 Select Country
                             </option>
-							<?php foreach ( $this->country_list as $key => $value ) : ?>
-								<?php $key = strtolower( $key ); ?>
-                                <option value="<?php echo $key; ?>" <?php if ( $key == $country ) {
-									echo 'selected';
-								} ?> >
+							<?php foreach ( $this->country_list as $key => $value ) {
+								$key = strtolower( $key ); ?>
+                                <option value="<?php echo $key; ?>" <?php selected( $key, $country ) ?>>
 									<?php echo $value; ?>
                                 </option>
-							<?php endforeach ?>
+							<?php } ?>
                         </select>
                     </td>
                 </tr>
@@ -1097,7 +1037,7 @@ if ( ! class_exists( 'Store_Locations' ) ) {
                         </label>
                     </th>
                     <td>
-                        <input name="map_lat" type="text" id="store_lat" value="<?php echo get_post_meta( $post->ID, 'map_lat', true ); ?>" readonly>
+                        <input name="map_lat" type="text" id="map_lat" value="<?php echo get_post_meta( $post->ID, 'map_lat', true ); ?>" readonly>
                         <p>Automatically will be filled as click on geocode button</p>
                     </td>
                 </tr>
@@ -1108,7 +1048,7 @@ if ( ! class_exists( 'Store_Locations' ) ) {
                         </label>
                     </th>
                     <td>
-                        <input name="map_lng" type="text" id="store_long" value="<?php echo get_post_meta( $post->ID, 'map_lng', true ); ?>" readonly>
+                        <input name="map_lng" type="text" id="map_lng" value="<?php echo get_post_meta( $post->ID, 'map_lng', true ); ?>" readonly>
                         <p>Automatically will be filled as click on geocode button</p>
                     </td>
                 </tr>
@@ -1170,7 +1110,7 @@ if ( ! class_exists( 'Store_Locations' ) ) {
 
                 <tr class="form-field">
                     <th scope="row">
-                        <label for="provider_name">
+                        <label for="contact_name">
 							<?php esc_html_e( 'Contact Name', 'store-location' ); ?>
                         </label>
                     </th>
@@ -1196,12 +1136,7 @@ if ( ! class_exists( 'Store_Locations' ) ) {
 			<?php
 		}
 
-		public function save_address_location( $post_id ) {
-
-			// var_dump_pre( $_POST );
-			// var_dump_pre( implode( ',', $_POST['languages'] ) );
-			// die();
-
+		public function save_address_location( $post_id ): void {
 			// If we are on the bulk edit screen, update post languages
 			if ( isset( $_REQUEST['bulk_edit'] ) ) {
 
@@ -1212,7 +1147,7 @@ if ( ! class_exists( 'Store_Locations' ) ) {
 			}
 
 			// If we are doing a quick edit
-			if ( isset( $_REQUEST['action'] ) && 'inline-save' == $_REQUEST['action'] ) {
+			if ( isset( $_REQUEST['action'] ) && 'inline-save' === $_REQUEST['action'] ) {
 				return;
 			}
 
@@ -1224,8 +1159,8 @@ if ( ! class_exists( 'Store_Locations' ) ) {
 			update_post_meta( $post_id, 'store_city', isset( $_POST['store_city'] ) ? sanitize_text_field( $_POST['store_city'] ) : '' );
 			update_post_meta( $post_id, 'store_state', isset( $_POST['store_state'] ) ? sanitize_text_field( $_POST['store_state'] ) : '' );
 			update_post_meta( $post_id, 'store_zipcode', isset( $_POST['store_zipcode'] ) ? sanitize_text_field( $_POST['store_zipcode'] ) : '' );
-			update_post_meta( $post_id, 'map_lat', isset( $_POST['map_lat'] ) ? $_POST['map_lat'] : '' );
-			update_post_meta( $post_id, 'map_lng', isset( $_POST['map_lng'] ) ? $_POST['map_lng'] : '' );
+			update_post_meta( $post_id, 'map_lat', $_POST['map_lat'] ?? '' );
+			update_post_meta( $post_id, 'map_lng', $_POST['map_lng'] ?? '' );
 			update_post_meta( $post_id, 'website_url', isset( $_POST['website_url'] ) ? sanitize_text_field( $_POST['website_url'] ) : '' );
 			update_post_meta( $post_id, 'phone_no', isset( $_POST['phone_no'] ) ? sanitize_text_field( $_POST['phone_no'] ) : '' );
 			update_post_meta( $post_id, 'email', isset( $_POST['email'] ) ? sanitize_text_field( $_POST['email'] ) : '' );
@@ -1234,17 +1169,18 @@ if ( ! class_exists( 'Store_Locations' ) ) {
 			update_post_meta( $post_id, 'study', isset( $_POST['study'] ) ? sanitize_text_field( $_POST['study'] ) : '' );
 		}
 
-		public function search_location_near() {
+		public function search_location_near(): void {
 
-			$lat      = ! empty( $_POST['pos_lat'] ) ? $_POST['pos_lat'] : '';
-			$lng      = ! empty( $_POST['pos_lng'] ) ? $_POST['pos_lng'] : '';
-			$lang     = ! empty( $_POST['lang'] ) ? $_POST['lang'] : '';
-			$show_map = $_POST['show_map'];
-			$study    = ! empty( $_POST['study'] ) ? $_POST['study'] : '';
+			$lat       = ! empty( $_POST['pos_lat'] ) ? $_POST['pos_lat'] : '';
+			$lng       = ! empty( $_POST['pos_lng'] ) ? $_POST['pos_lng'] : '';
+			$lang      = ! empty( $_POST['lang'] ) ? $_POST['lang'] : '';
+			$show_map  = $_POST['show_map'];
+			$study     = ! empty( $_POST['study'] ) ? $_POST['study'] : '';
+			$locations = [];
 
 			if ( ! empty( $lat ) && ! empty( $lng ) ) {
-				$locations        = [];
 				$locations_result = $this->get_nearby_locations( $lat, $lng, $lang, DISTANCE_MILES );
+
 				if ( ! empty ( $locations_result ) ) {
 					foreach ( $locations_result as $loc ) {
 						if ( ! empty( $lang ) ) {
@@ -1274,13 +1210,13 @@ if ( ! class_exists( 'Store_Locations' ) ) {
 					}
 				}
 			} else {
-				$locations = [];
-				$args      = array(
+				$args = array(
 					'post_type'      => 'locations',
 					'post_status'    => 'publish',
 					'posts_per_page' => - 1,
 					'meta_query'     => array()
 				);
+
 				if ( $lang ) {
 					$args['meta_query'][] = array(
 						'key'     => 'languages',
@@ -1296,7 +1232,7 @@ if ( ! class_exists( 'Store_Locations' ) ) {
 					$study = trim( $study );
 
 					// Check if the study has a comma
-					if ( strpos( $study, ',' ) !== false ) {
+					if ( str_contains( $study, ',' ) ) {
 						$study = explode( ',', $study );
 
 						$args['meta_query'][] = array(
@@ -1356,12 +1292,15 @@ if ( ! class_exists( 'Store_Locations' ) ) {
 				wp_reset_query();
 
 			}
+
 			if ( ! empty( $locations ) ) {
 				$total_found   = count( $locations );
 				$map_locations = [];
-				if ( $show_map == 'yes' ) {
+
+				if ( $show_map === 'yes' ) {
 					$map_locations = $this->build_map_locations( $locations );
 				}
+
 				$list_locations = $this->build_locations_list( $locations, $show_map );
 				$all_data       = array(
 					'status'        => true,
@@ -1373,6 +1312,7 @@ if ( ! class_exists( 'Store_Locations' ) ) {
 					'show_map'      => $show_map,
 					'locations'     => $locations
 				);
+
 				wp_send_json( $all_data );
 			} else {
 				$not_found = __( 'Sorry no data found.', 'store-location' );
@@ -1387,7 +1327,7 @@ if ( ! class_exists( 'Store_Locations' ) ) {
 			}
 		}
 
-		public function build_map_locations( $locations ) {
+		public function build_map_locations( $locations ): array {
 			$response_loc = [];
 			$i            = 1;
 			if ( count( $locations ) > 0 ) {
@@ -1398,32 +1338,48 @@ if ( ! class_exists( 'Store_Locations' ) ) {
 						continue;
 					}
 
-					$loc_id   = $location['post_id'];
-					$address  = get_post_meta( $loc_id, "store_address", true );
-					$address2 = get_post_meta( $loc_id, "address_2", true );
-					$city     = get_post_meta( $loc_id, "store_city", true );
-					$state    = get_post_meta( $loc_id, "store_state", true );
-					$zipcode  = get_post_meta( $loc_id, "store_zipcode", true );
+					$address_parts = [];
 
-					if ( $address2 ) {
-						$address .= ' ' . $address2;
+					$loc_id    = $location['post_id'];
+					$address_1 = get_post_meta( $loc_id, "store_address", true );
+					$address_2 = get_post_meta( $loc_id, "address_2", true );
+					$city      = get_post_meta( $loc_id, "store_city", true );
+					$state     = get_post_meta( $loc_id, "store_state", true );
+					$zipcode   = get_post_meta( $loc_id, "store_zipcode", true );
+
+					if ( $address_1 ) {
+						$address_parts[] = $address_1;
 					}
+
+					if ( $address_2 ) {
+						$address_parts[] = $address_2;
+					}
+
 					if ( $city ) {
-						$address .= ( $state ) ? ' ' . $city : ' ' . $city;
+						$address_parts[] = $city;
 					}
+
+					$state_zip = '';
+
 					if ( $state ) {
-						$address .= ', ' . $state;
+						$state_zip .= $state;
 					}
+
 					if ( $zipcode ) {
-						$address .= ' ' . $zipcode;
+						$state_zip .= ( $state ? ' ' : '' ) . $zipcode;
 					}
 
-					$directions = $address ? $address : $lat . ',' . $lng;
+					if ( $state_zip ) {
+						$address_parts[] = $state_zip;
+					}
 
-					$phone          = ( get_post_meta( $loc_id, "phone_no", true ) ) ? get_post_meta( $loc_id, "phone_no", true ) : '';
-					$email          = ( get_post_meta( $loc_id, "email", true ) ) ? get_post_meta( $loc_id, "email", true ) : '';
-					$provider_name  = ( get_post_meta( $loc_id, "provider_name", true ) ) ? get_post_meta( $loc_id, "provider_name", true ) : '';
-					$contact_name   = ( get_post_meta( $loc_id, "contact_name", true ) ) ? get_post_meta( $loc_id, "contact_name", true ) : '';
+					$address = implode( ', ', $address_parts );
+
+					$phone         = get_post_meta( $loc_id, "phone_no", true ) ? get_post_meta( $loc_id, "phone_no", true ) : '';
+					$email         = get_post_meta( $loc_id, "email", true ) ? get_post_meta( $loc_id, "email", true ) : '';
+					$provider_name = get_post_meta( $loc_id, "provider_name", true ) ? get_post_meta( $loc_id, "provider_name", true ) : '';
+					$contact_name  = get_post_meta( $loc_id, "contact_name", true ) ? get_post_meta( $loc_id, "contact_name", true ) : '';
+
 					$response_loc[] = array(
 						'ID'             => $i,
 						'name'           => $location['post_title'],
@@ -1444,26 +1400,24 @@ if ( ! class_exists( 'Store_Locations' ) ) {
 			return $response_loc;
 		}
 
-		public function build_locations_list( $locations, $show_map = 'yes' ) {
+		public function build_locations_list( $locations, $show_map = 'yes' ): bool|string {
 			ob_start();
-			?>
-			<?php if ( count( $locations ) > 0 ) : ?>
-				<?php $j = 1; ?>
-				<?php foreach ( $locations as $location ) : ?>
-					<?php
-					// var_dump_pre( $location );
-					// store_address address_2 store_city store_state store_state store_zipcode
 
+			if ( count( $locations ) > 0 ) {
+				$j = 1;
+				foreach ( $locations as $location ) {
 					$lat = $location['lat'];
 					$lng = $location['lng'];
+
 					if ( $lat == '' || $lng == '' ) {
 						continue;
 					}
+
 					$loc_id        = $location['post_id'];
-					$phone         = ( get_post_meta( $loc_id, "phone_no", true ) ) ? get_post_meta( $loc_id, "phone_no", true ) : '';
-					$email         = ( get_post_meta( $loc_id, "email", true ) ) ? get_post_meta( $loc_id, "email", true ) : '';
-					$provider_name = ( get_post_meta( $loc_id, "provider_name", true ) ) ? get_post_meta( $loc_id, "provider_name", true ) : '';
-					$contact_name  = ( get_post_meta( $loc_id, "contact_name", true ) ) ? get_post_meta( $loc_id, "contact_name", true ) : '';
+					$phone         = get_post_meta( $loc_id, "phone_no", true ) ? get_post_meta( $loc_id, "phone_no", true ) : '';
+					$email         = get_post_meta( $loc_id, "email", true ) ? get_post_meta( $loc_id, "email", true ) : '';
+					$provider_name = get_post_meta( $loc_id, "provider_name", true ) ? get_post_meta( $loc_id, "provider_name", true ) : '';
+					$contact_name  = get_post_meta( $loc_id, "contact_name", true ) ? get_post_meta( $loc_id, "contact_name", true ) : '';
 
 					$address_parts = [];
 
@@ -1502,8 +1456,8 @@ if ( ! class_exists( 'Store_Locations' ) ) {
 					$address = implode( ', ', $address_parts );
 
 					$directions = $address ?: $lat . ',' . $lng;
-					?>
-					<?php if ( $show_map == 'no' ) : ?>
+
+					if ( $show_map == 'no' ) { ?>
                         <div class="vc_row row-internal row-container">
                             <div class="row row-child">
                                 <div class="wpb_row row-inner" style="height: 102px;">
@@ -1531,9 +1485,9 @@ if ( ! class_exists( 'Store_Locations' ) ) {
                                                     <div class="uncont">
                                                         <div class="uncode_text_column">
                                                             <p>
-																<?php if ( ! empty( $provider_name ) ) : ?>
-																	<?php echo $provider_name; ?>
-																<?php endif; ?>
+																<?php if ( ! empty( $provider_name ) ) {
+																	echo $provider_name;
+																} ?>
                                                             </p>
                                                         </div>
                                                     </div>
@@ -1553,14 +1507,14 @@ if ( ! class_exists( 'Store_Locations' ) ) {
 																<?php echo $city; ?>, <?php echo $state; ?> <?php echo $zipcode; ?>
                                                             </p>
 
-															<?php if ( $this->show_direction ) : ?>
+															<?php if ( $this->show_direction ) { ?>
                                                                 <p>
                                                                     <a href="https://www.google.com/maps?q=<?php echo $directions; ?>"
                                                                        target="_blank">
 																		<?php _e( 'Get Directions', 'store-location' ); ?>
                                                                     </a>
                                                                 </p>
-															<?php endif; ?>
+															<?php } ?>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -1574,21 +1528,21 @@ if ( ! class_exists( 'Store_Locations' ) ) {
                                                     <div class="uncont">
                                                         <div class="uncode_text_column">
                                                             <p>
-																<?php if ( ! empty ( $contact_name ) ) : ?>
+																<?php if ( ! empty ( $contact_name ) ) { ?>
                                                                     <span>
 																		<?php echo $contact_name; ?>
 																	</span><br/>
-																<?php endif; ?>
-																<?php if ( ! empty( $email ) ) : ?>
+																<?php }
+																if ( ! empty( $email ) ) { ?>
                                                                     <a href="mailto:<?php echo esc_html( $email ); ?>">
 																		<?php echo esc_html( $email ); ?>
                                                                     </a><br/>
-																<?php endif; ?>
-																<?php if ( ! empty( $phone ) ) : ?>
+																<?php }
+																if ( ! empty( $phone ) ) { ?>
                                                                     <a href="tel:<?php echo preg_replace( "/[^0-9]/", "", $phone ) ?>">
 																		<?php echo $phone; ?>
                                                                     </a>
-																<?php endif; ?>
+																<?php } ?>
                                                             </p>
                                                         </div>
                                                     </div>
@@ -1602,43 +1556,43 @@ if ( ! class_exists( 'Store_Locations' ) ) {
                         <div class="divider-wrapper result-diviser">
                             <hr class="separator-no-padding">
                         </div>
-					<?php else: ?>
+					<?php } else { ?>
                         <div class="store-location loc-row" id="loc-<?php echo $j; ?>">
                             <div class="OneLinkNoTx">
                                 <h5 class="store-location-name">
 									<?php echo $location['post_title']; ?>
                                 </h5>
-								<?php if ( ! empty( $provider_name ) ) : ?>
+								<?php if ( ! empty( $provider_name ) ) { ?>
                                     <div class="store-location-provider">
 									<span>
 										<?php echo $provider_name; ?>
 									</span>
                                     </div>
-								<?php endif; ?>
+								<?php } ?>
                                 <address class="store-location-address">
 									<?php echo $address; ?>
                                 </address>
-								<?php if ( ! empty ( $contact_name ) ) : ?>
+								<?php if ( ! empty ( $contact_name ) ) { ?>
                                     <div class="store-location-phone">
 									<span>
 										<?php echo $contact_name; ?>
 									</span>
                                     </div>
-								<?php endif; ?>
-								<?php if ( ! empty ( $phone ) ) : ?>
+								<?php } ?>
+								<?php if ( ! empty ( $phone ) ) { ?>
                                     <div class="store-location-phone">
                                         <a href="tel:<?php echo $phone; ?>">
 											<?php echo $phone; ?>
                                         </a>
                                     </div>
-								<?php endif; ?>
-								<?php if ( ! empty ( $email ) ) : ?>
+								<?php } ?>
+								<?php if ( ! empty ( $email ) ) { ?>
                                     <div class="store-location-email">
                                         <a href="mail-to:<?php echo esc_html( $email ); ?>">
 											<?php echo esc_html( $email ); ?>
                                         </a>
                                     </div>
-								<?php endif; ?>
+								<?php } ?>
                             </div>
                             <div class="store-location-btn-wrapper OneLinkTx">
                                 <a href="javascript:void(0);" data-id="<?php echo $j; ?>" data-lat="<?php echo $lat; ?>"
@@ -1647,17 +1601,15 @@ if ( ! class_exists( 'Store_Locations' ) ) {
                                 </a>
                             </div>
                         </div>
-					<?php endif; ?>
-					<?php $j ++; ?>
-				<?php endforeach; ?>
-			<?php endif; ?>
-			<?php
-			$info = ob_get_clean();
+					<?php }
+					$j ++;
+				}
+			}
 
-			return $info;
+			return ob_get_clean();
 		}
 
-		public function get_nearby_locations( $lat, $long, $lang, $distance = 50 ) {
+		public function get_nearby_locations( $lat, $long, $lang, $distance = 50 ): array|object {
 			global $wpdb;
 			$nearbyLocations = $wpdb->get_results( "SELECT DISTINCT    
 				map_lat.post_id,
@@ -1693,13 +1645,12 @@ if ( ! class_exists( 'Store_Locations' ) ) {
 			return $columns;
 		}
 
-		public function columns_locations_data( $column, $post_id ) {
+		public function columns_locations_data( $column, $post_id ): void {
 			switch ( $column ) {
 				case 'lang':
 					$language_codes = get_post_meta( $post_id, 'languages', true );
-					// var_dump_pre( $language_codes );
+
 					if ( $language_codes ) {
-						// echo str_replace ( ',', ', ', $language_code );
 						$lang_array = explode( ',', $language_codes );
 						$res        = array();
 						foreach ( $lang_array as $value ) {
@@ -1712,7 +1663,7 @@ if ( ! class_exists( 'Store_Locations' ) ) {
 					break;
 				case 'country':
 					$country = get_post_meta( $post_id, 'country', true );
-					// var_dump_pre( $country );
+
 					if ( $country ) {
 						echo $this->country_list[ strtoupper( $country ) ];
 					} else {
@@ -1721,6 +1672,7 @@ if ( ! class_exists( 'Store_Locations' ) ) {
 					break;
 				case 'study':
 					$study = get_post_meta( $post_id, 'study', true );
+
 					if ( $study ) {
 						echo $study;
 					}
@@ -1731,28 +1683,28 @@ if ( ! class_exists( 'Store_Locations' ) ) {
 		//****************************************************************************/
 		// Admin Languages and Country filters for Location CPT
 		//****************************************************************************/
-		function load_custom_filter_wpse_94630() {
-
+		function load_edit(): void {
 			global $typenow;
 
 			// Adjust the Post Type
-			if ( 'locations' != $typenow ) {
+			if ( 'locations' !== $typenow ) {
 				return;
 			}
 
-			add_filter( 'posts_where', [ $this, 'posts_where_wpse_94630' ] );
+			add_filter( 'posts_where', [ $this, 'posts_where' ] );
 		}
 
-		function posts_where_wpse_94630( $where ) {
-
+		function posts_where( $where ) {
 			global $wpdb;
 
-			if ( isset( $_GET['store-language'] ) && ! empty( $_GET['store-language'] ) ) {
+			if ( ! empty( $_GET['store-language'] ) ) {
 				$meta  = esc_sql( $_GET['store-language'] );
 				$where .= " AND ID IN (SELECT post_id FROM $wpdb->postmeta WHERE meta_value LIKE '%$meta%' AND $wpdb->postmeta.meta_key = 'languages' )";
 			}
-			if ( isset( $_GET['store-country'] ) && ! empty( $_GET['store-country'] ) ) {
+
+			if ( ! empty( $_GET['store-country'] ) ) {
 				$meta = esc_sql( $_GET['store-country'] );
+
 				if ( 'not-set' == $_GET['store-country'] ) {
 					$where .= " AND ( 
 			        					NOT EXISTS (SELECT * FROM $wpdb->postmeta WHERE $wpdb->postmeta.meta_key = 'country' AND $wpdb->postmeta.post_id=$wpdb->posts.ID ) 
@@ -1761,11 +1713,11 @@ if ( ! class_exists( 'Store_Locations' ) ) {
 			        )";
 				} else {
 					$where .= " AND ID IN (SELECT post_id FROM $wpdb->postmeta WHERE meta_value LIKE '$meta' )";
-					// $where .= " AND ID IN (SELECT post_id FROM $wpdb->postmeta WHERE $wpdb->postmeta.meta_key = 'country' AND meta_value = ' ' )";
 				}
 			}
-			if ( isset( $_GET['store-study'] ) && ! empty( $_GET['store-study'] ) ) {
+			if ( ! empty( $_GET['store-study'] ) ) {
 				$meta = esc_sql( $_GET['store-study'] );
+
 				if ( 'not-set' == $_GET['store-study'] ) {
 					$where .= " AND ( 
 			        					NOT EXISTS (SELECT * FROM $wpdb->postmeta WHERE $wpdb->postmeta.meta_key = 'study' AND $wpdb->postmeta.post_id=$wpdb->posts.ID ) 
@@ -1774,17 +1726,14 @@ if ( ! class_exists( 'Store_Locations' ) ) {
 			        )";
 				} else {
 					$where .= " AND ID IN (SELECT post_id FROM $wpdb->postmeta WHERE meta_value LIKE '$meta' )";
-					// $where .= " AND ID IN (SELECT post_id FROM $wpdb->postmeta WHERE $wpdb->postmeta.meta_key = 'country' AND meta_value = ' ' )";
 				}
 			}
 
-			// var_dump_pre( $where );
 			return $where;
 		}
 
-		function wpse45436_admin_posts_filter_restrict_manage_posts( $post_type ) {
-
-			global $wpdb, $post;
+		function restrict_manage_posts( $post_type ): void {
+			global $wpdb;
 
 			if ( 'locations' !== $post_type ) {
 				return;
@@ -1792,33 +1741,29 @@ if ( ! class_exists( 'Store_Locations' ) ) {
 
 			// languages
 			$active_languages = get_option( 'store-loc-active-languages' );
-			// var_dump_pre( $active_languages );
 
 			$active_languages_array = array();
 			if ( ! empty( $active_languages ) ) {
 				$active_languages_array = explode( ',', $active_languages );
 			}
-			// var_dump_pre( $active_languages_array );
 
 			// countries
 			$countries_res = $wpdb->get_results( "SELECT DISTINCT meta_value FROM $wpdb->postmeta pm, $wpdb->posts p WHERE meta_key = 'country' and pm.post_id=p.ID  and p.post_type='locations' ", ARRAY_A );
-			// var_dump_pre( $countries_res );
+			$countries     = array( 'not-set' );
 
 			if ( is_array( $countries_res ) ) {
-				$countries = array( 'not-set' );
 				foreach ( $countries_res as $value ) {
 					if ( ! empty( $value['meta_value'] ) ) {
 						$countries[] = $value['meta_value'];
 					}
 				}
-				// var_dump_pre( $countries );
 			}
 
 			// Study
 			$studies_res = $wpdb->get_results( "SELECT DISTINCT meta_value FROM $wpdb->postmeta pm, $wpdb->posts p WHERE meta_key = 'study' and pm.post_id=p.ID  and p.post_type='locations' ", ARRAY_A );
+			$studies     = array( 'not-set' );
 
 			if ( is_array( $studies_res ) ) {
-				$studies = array( 'not-set' );
 				foreach ( $studies_res as $value ) {
 					if ( ! empty( $value['meta_value'] ) ) {
 						$studies[] = $value['meta_value'];
@@ -1826,67 +1771,66 @@ if ( ! class_exists( 'Store_Locations' ) ) {
 				}
 			}
 
-			?>
-			<?php if ( ! empty( $active_languages ) ) : ?>
-                <select name="store-language">
-                    <option value="">
-						<?php _e( 'All Languages', 'store-location' ); ?>
-                    </option>
-					<?php $current_lang = isset( $_GET['store-language'] ) ? $_GET['store-language'] : ''; ?>
-					<?php foreach ( $active_languages_array as $value ) : ?>
-						<?php
-						$selected       = $value == $current_lang ? ' selected="selected"' : '';
-						$language_label = $this->flags_array[ $value ];
-						?>
-                        <option value="<?php echo $value ?>" <?php echo $selected ?> >
-							<?php echo $language_label[2]; ?> ( <?php echo $language_label[0]; ?> )
+			if ( ! empty( $active_languages ) ) { ?>
+                <label>
+                    <select name="store-language">
+                        <option value="">
+							<?php _e( 'All Languages', 'store-location' ); ?>
                         </option>
-					<?php endforeach; ?>
-                </select>
-			<?php endif ?>
-			<?php if ( is_array( $countries ) ) : ?>
-                <select name="store-country">
-                    <option value="">
-						<?php _e( 'All Countries', 'store-location' ); ?>
-                    </option>
-					<?php $current_country = isset( $_GET['store-country'] ) ? $_GET['store-country'] : ''; ?>
-					<?php foreach ( $countries as $value ) : ?>
-						<?php $selected = $value == $current_country ? ' selected="selected"' : '' ?>
-						<?php if ( 'not-set' == $value ): ?>
-                            <option value="not-set" <?php echo $selected ?> >
-                                Not Set
+						<?php $current_lang = $_GET['store-language'] ?? '';
+						foreach ( $active_languages_array as $value ) {
+							$selected       = selected( $value, $current_lang, false );
+							$language_label = $this->flags_array[ $value ];
+							?>
+                            <option value="<?php echo $value ?>" <?php echo $selected ?>>
+								<?php echo $language_label[2]; ?> ( <?php echo $language_label[0]; ?> )
                             </option>
-						<?php else : ?>
-                            <option value="<?php echo $value ?>" <?php echo $selected ?> >
-								<?php echo $this->country_list[ strtoupper( $value ) ]; ?>
-                            </option>
-						<?php endif ?>
-					<?php endforeach; ?>
-                </select>
-			<?php endif ?>
+						<?php } ?>
+                    </select>
+                </label>
+			<?php } ?>
 
-			<?php if ( is_array( $studies ) ) : ?>
-                <select name="store-study">
-                    <option value="">
-						<?php _e( 'All Studies', 'store-location' ); ?>
-                    </option>
-					<?php $current_study = isset( $_GET['store-study'] ) ? $_GET['store-study'] : ''; ?>
-					<?php foreach ( $studies as $value ) : ?>
-						<?php $selected = $value == $current_study ? ' selected="selected"' : '' ?>
-						<?php if ( 'not-set' == $value ): ?>
-                            <option value="not-set" <?php echo $selected ?> >
-                                Not Set
-                            </option>
-						<?php else : ?>
-                            <option value="<?php echo $value ?>" <?php echo $selected ?> >
-								<?php echo $value; ?>
-                            </option>
-						<?php endif ?>
-					<?php endforeach; ?>
-                </select>
-			<?php endif ?>
+			<?php if ( is_array( $countries ) ) { ?>
+                <label>
+                    <select name="store-country">
+                        <option value="">
+							<?php _e( 'All Countries', 'store-location' ); ?>
+                        </option>
+						<?php $current_country = $_GET['store-country'] ?? '';
+						foreach ( $countries as $value ) {
+							$selected = selected( $value, $current_country, false );
+							if ( 'not-set' == $value ) { ?>
+                                <option value="not-set" <?php echo $selected ?> >Not Set</option>
+							<?php } else { ?>
+                                <option value="<?php echo $value ?>" <?php echo $selected ?>>
+									<?php echo $this->country_list[ strtoupper( $value ) ]; ?>
+                                </option>
+							<?php } ?>
+						<?php } ?>
+                    </select>
+                </label>
+			<?php } ?>
 
-			<?php
+			<?php if ( is_array( $studies ) ) { ?>
+                <label>
+                    <select name="store-study">
+                        <option value="">
+							<?php _e( 'All Studies', 'store-location' ); ?>
+                        </option>
+						<?php $current_study = $_GET['store-study'] ?? ''; ?>
+						<?php foreach ( $studies as $value ) {
+							$selected = selected( $value, $current_study, false );
+							if ( 'not-set' === $value ) { ?>
+                                <option value="not-set" <?php echo $selected ?>>Not Set</option>
+							<?php } else { ?>
+                                <option value="<?php echo $value ?>" <?php echo $selected ?>>
+									<?php echo $value; ?>
+                                </option>
+							<?php }
+						} ?>
+                    </select>
+                </label>
+			<?php }
 		}
 
 		public function update_request() {
@@ -1910,9 +1854,7 @@ if ( ! class_exists( 'Store_Locations' ) ) {
 
 			}
 
-			$remote = json_decode( wp_remote_retrieve_body( $remote ) );
-
-			return $remote;
+			return json_decode( wp_remote_retrieve_body( $remote ) );
 
 		}
 
@@ -1984,14 +1926,14 @@ if ( ! class_exists( 'Store_Locations' ) ) {
 			}
 		}
 
-		function location_import_page() {
-			add_submenu_page( 'edit.php?post_type=locations', __( 'Import Locations', 'textdomain' ), __( 'Import Locations', 'textdomain' ), 'manage_options', 'import-location', [
+		function location_import_page(): void {
+			add_submenu_page( 'edit.php?post_type=locations', __( 'Import Locations', 'store-location' ), __( 'Import Locations', 'store-location' ), 'manage_options', 'import-location', [
 				$this,
 				'location_import_page_html'
-			], );
+			] );
 		} // end of upload page
 
-		function location_import_page_html() {
+		function location_import_page_html(): void {
 			?>
             <div class="wrap">
                 <h1 class="page-title">Import Locations</h1>
@@ -2001,69 +1943,57 @@ if ( ! class_exists( 'Store_Locations' ) ) {
 						$header = fgetcsv( $file );
 						while ( ( $line = fgetcsv( $file ) ) !== false ) {
 							$line = array_combine( $header, $line );
-							if ( $line["title"] != '' ) {
+
+							if ( $line["title"] !== '' ) {
 								$post_id       = ( isset( $line["post_id"] ) && $line["post_id"] ) ? $line["post_id"] : 0;
-								$title         = ( $line["title"] ) ? $line["title"] : "";
-								$address1      = ( $line["address1"] ) ? $line["address1"] : "";
-								$address2      = ( $line["address2"] ) ? $line["address2"] : "";
-								$city          = ( $line["city"] ) ? $line["city"] : "";
-								$state         = ( $line["state"] ) ? $line["state"] : "";
-								$zip           = ( $line["zip_code"] ) ? $line["zip_code"] : "";
-								$country       = ( $line["country"] ) ? $line["country"] : "";  // Always should be lowercase and 2 letters representing country
-								$website       = ( $line["website"] ) ? $line["website"] : "";
-								$phone         = ( $line["phone"] ) ? $line["phone"] : "";
-								$email         = ( $line["email"] ) ? $line["email"] : "";
-								$provider_name = ( $line["provider_name"] ) ? $line["provider_name"] : "";
-								$contact_name  = ( $line["contact_name"] ) ? $line["contact_name"] : "";
-								$study         = ( $line["study"] ) ? $line["study"] : "";
+								$title         = $line["title"] ?: "";
+								$address1      = $line["address1"] ?: "";
+								$address2      = $line["address2"] ?: "";
+								$city          = $line["city"] ?: "";
+								$state         = $line["state"] ?: "";
+								$zip           = $line["zip_code"] ?: "";
+								$country       = $line["country"] ?: "";
+								$website       = $line["website"] ?: "";
+								$phone         = $line["phone"] ?: "";
+								$email         = $line["email"] ?: "";
+								$provider_name = $line["provider_name"] ?: "";
+								$contact_name  = $line["contact_name"] ?: "";
+								$study         = $line["study"] ?: "";
 
 								$lat  = 0;
 								$long = 0;
 
-								if ( $address1 != '' ) {
-									$geoaddress = $address1;
-									if ( $address2 != '' ) {
-										$geoaddress .= " $address2";
+								if ( $address1 !== '' ) {
+									$geo_address = $address1;
+									if ( $address2 !== '' ) {
+										$geo_address .= " $address2";
 									}
-									if ( $city != '' && ! str_contains( strtolower( $geoaddress ), strtolower( $city ) ) ) {
-										$geoaddress .= " $city";
+									if ( $city !== '' && ! str_contains( strtolower( $geo_address ), strtolower( $city ) ) ) {
+										$geo_address .= " $city";
 									}
-									if ( $state != '' && ! str_contains( strtolower( $geoaddress ), strtolower( $state ) ) ) {
-										$geoaddress .= ", $state";
+									if ( $state !== '' && ! str_contains( strtolower( $geo_address ), strtolower( $state ) ) ) {
+										$geo_address .= ", $state";
 									}
-									if ( $zip != '' && ! str_contains( strtolower( $geoaddress ), strtolower( $zip ) ) ) {
-										$geoaddress .= ", $zip";
+									if ( $zip !== '' && ! str_contains( strtolower( $geo_address ), strtolower( $zip ) ) ) {
+										$geo_address .= ", $zip";
 									}
 
-									$geocode = $this->geocode( $geoaddress );
-									if ( $geocode && is_array( $geocode ) ) {
-										$lat  = $geocode[0];
-										$long = $geocode[1];
+									$geo_code = $this->geocode( $geo_address );
+
+									if ( $geo_code && is_array( $geo_code ) ) {
+										$lat  = $geo_code[0];
+										$long = $geo_code[1];
 									}
 								}
 
-								/* Data that can be used for debugging upload		
-										echo $title . "<br />";
-										echo $address1 . $address2 . "<br />";
-										echo $city . "<br />";
-										echo $state . "<br />";
-										echo $zip . "<br />";
-										echo $country . "<br />";
-										echo $website . "<br />";
-										echo $phone . "<br />";
-										echo $email . "<br />";
-										echo $provider_name . "<br />";
-								*/
+								$post_exists = $post_id ? get_post( $post_id ) : null;
 
-								if ( $post_id && $title != '' ) {
-									$post_args = array(
+								if ( $post_exists && $post_exists->post_type === 'locations' ) {
+									wp_update_post( array(
 										'ID'         => $post_id,
 										'post_title' => $title,
-									);
-									wp_update_post( $post_args );
-								}
-
-								if ( ! $post_id ) {
+									) );
+								} else {
 									$post_id = wp_insert_post( array(
 										'post_title'   => $title,
 										'post_type'    => 'locations',
@@ -2114,19 +2044,18 @@ if ( ! class_exists( 'Store_Locations' ) ) {
 			<?php
 		} // End of Location import page callback	
 
-		function location_export_request() {
+		function location_export_request(): void {
 			if ( isset( $_GET['location-csv-export'] ) ) {
 
-				$expargs = array(
+				$export_args = array(
 					'post_type'      => 'locations',
 					'post_status'    => 'publish',
 					'posts_per_page' => - 1,
 				);
 
-				$explocations = get_posts( $expargs );
+				$export_locations = get_posts( $export_args );
 
-				if ( $explocations ) {
-
+				if ( $export_locations ) {
 					header( 'Content-Type: application/csv' );
 					header( 'Content-Disposition: attachment; filename=location-export.csv' );
 					$f = fopen( 'php://output', 'w' );
@@ -2146,7 +2075,8 @@ if ( ! class_exists( 'Store_Locations' ) ) {
 						"contact_name",
 						"study"
 					], "," );
-					foreach ( $explocations as $location ) {
+
+					foreach ( $export_locations as $location ) {
 						$post_id       = $location->ID;
 						$title         = $location->post_title;
 						$address1      = get_post_meta( $post_id, 'store_address', true );
@@ -2162,7 +2092,6 @@ if ( ! class_exists( 'Store_Locations' ) ) {
 						$contact_name  = get_post_meta( $post_id, 'contact_name', true );
 						$study         = get_post_meta( $post_id, 'study', true );
 
-						//fputcsv($f,[$post_id,"Test"]);
 						fputcsv( $f, [
 							$post_id,
 							$title,
@@ -2187,11 +2116,11 @@ if ( ! class_exists( 'Store_Locations' ) ) {
 			}
 		}
 
-		function location_export_page() {
-			add_submenu_page( 'edit.php?post_type=locations', __( 'Export Locations', 'textdomain' ), __( 'Export Locations', 'textdomain' ), 'manage_options', 'export-location', [
+		function location_export_page(): void {
+			add_submenu_page( 'edit.php?post_type=locations', __( 'Export Locations', 'store-location' ), __( 'Export Locations', 'store-location' ), 'manage_options', 'export-location', [
 				$this,
 				'location_export_page_html'
-			], );
+			] );
 		} // end of upload page
 
 		function location_export_page_html() {
@@ -2211,7 +2140,8 @@ if ( ! class_exists( 'Store_Locations' ) ) {
 
 		function geocode( $address ) {
 
-			$apikey = esc_attr( get_option( 'gmap_api_key' ) );
+			$apikey = get_option( 'gmap_api_key' );
+
 			if ( empty( $apikey ) ) {
 				return false;
 			}
@@ -2232,8 +2162,8 @@ if ( ! class_exists( 'Store_Locations' ) ) {
 			if ( $resp['status'] == 'OK' ) {
 
 				// get the important data
-				$lat  = isset( $resp['results'][0]['geometry']['location']['lat'] ) ? $resp['results'][0]['geometry']['location']['lat'] : "";
-				$long = isset( $resp['results'][0]['geometry']['location']['lng'] ) ? $resp['results'][0]['geometry']['location']['lng'] : "";
+				$lat  = $resp['results'][0]['geometry']['location']['lat'] ?? "";
+				$long = $resp['results'][0]['geometry']['location']['lng'] ?? "";
 
 				// verify if data is complete
 				if ( $lat && $long ) {
@@ -2257,35 +2187,30 @@ if ( ! class_exists( 'Store_Locations' ) ) {
 		/**
 		 * Add custom field to quick edit screen.
 		 */
-		function quick_edit_custom_box( $column_name ) {
-			switch ( $column_name ) {
-				case 'lang':
-					wp_nonce_field( 'store_location_bulk_edit_nonce', 'store_location_bulk_edit_nonce' );
-					?>
-					<?php
-					global $wpdb;
+		function quick_edit_custom_box( $column_name ): void {
+			if ( $column_name == 'lang' ) {
+				wp_nonce_field( 'store_location_bulk_edit_nonce', 'store_location_bulk_edit_nonce' );
 
-					// Get all active wpml languages from wp_icl_languages table
-					$active_languages = $wpdb->get_results( "SELECT code, english_name FROM {$wpdb->prefix}icl_languages WHERE active = 1", ARRAY_A );
-					?>
-                    <!-- loop through all active languages -->
-                    <fieldset class="inline-edit-col-right">
-                        <div class="inline-edit-col column-<?php echo esc_attr( $column_name ); ?>">
-                            <label class="inline-edit-group">
-								<?php esc_html_e( 'Languages: ', 'store-location' ); ?>
+				global $wpdb;
 
-								<?php foreach ( $active_languages as $language ) : ?>
-                                    <label>
-                                        <input type="checkbox" name="languages[]" value="<?php echo $language['code']; ?>"/>
-										<?php echo $language['english_name']; ?>
-                                    </label>
-								<?php endforeach; ?>
-                            </label>
-                        </div>
-                    </fieldset>
+				$active_languages = $wpdb->get_results( "SELECT code, english_name FROM {$wpdb->prefix}icl_languages WHERE active = 1", ARRAY_A );
+				?>
+                <!-- loop through all active languages -->
+                <fieldset class="inline-edit-col-right">
+                    <div class="inline-edit-col column-<?php echo esc_attr( $column_name ); ?>">
+                        <label class="inline-edit-group">
+							<?php esc_html_e( 'Languages: ', 'store-location' ); ?>
 
-					<?php
-					break;
+							<?php foreach ( $active_languages as $language ) { ?>
+                                <label>
+                                    <input type="checkbox" name="languages[]" value="<?php echo $language['code']; ?>"/>
+									<?php echo $language['english_name']; ?>
+                                </label>
+							<?php } ?>
+                        </label>
+                    </div>
+                </fieldset>
+				<?php
 			}
 		}
 	}
