@@ -3,806 +3,141 @@
  * The file contains all the plugin-related functions
  */
 
+use StudySiteListing\Config\Location_Config;
+
 if ( ! class_exists( 'Store_Locations' ) ) {
 
 	class Store_Locations {
 
-		var bool $show_direction = false;
-
-		public string $plugin_slug;
-		public string $version;
-		public string $cache_key;
-		public bool $cache_allowed;
-
-		var array $country_list = array(
-			"AF" => "Afghanistan",
-			"AL" => "Albania",
-			"DZ" => "Algeria",
-			"AS" => "American Samoa",
-			"AD" => "Andorra",
-			"AO" => "Angola",
-			"AI" => "Anguilla",
-			"AQ" => "Antarctica",
-			"AG" => "Antigua and Barbuda",
-			"AR" => "Argentina",
-			"AM" => "Armenia",
-			"AW" => "Aruba",
-			"AU" => "Australia",
-			"AT" => "Austria",
-			"AZ" => "Azerbaijan",
-			"BS" => "Bahamas",
-			"BH" => "Bahrain",
-			"BD" => "Bangladesh",
-			"BB" => "Barbados",
-			"BY" => "Belarus",
-			"BE" => "Belgium",
-			"BZ" => "Belize",
-			"BJ" => "Benin",
-			"BM" => "Bermuda",
-			"BT" => "Bhutan",
-			"BO" => "Bolivia",
-			"BA" => "Bosnia and Herzegovina",
-			"BW" => "Botswana",
-			"BV" => "Bouvet Island",
-			"BR" => "Brazil",
-			"BQ" => "British Antarctic Territory",
-			"IO" => "British Indian Ocean Territory",
-			"VG" => "British Virgin Islands",
-			"BN" => "Brunei",
-			"BG" => "Bulgaria",
-			"BF" => "Burkina Faso",
-			"BI" => "Burundi",
-			"KH" => "Cambodia",
-			"CM" => "Cameroon",
-			"CA" => "Canada",
-			"CT" => "Canton and Enderbury Islands",
-			"CV" => "Cape Verde",
-			"KY" => "Cayman Islands",
-			"CF" => "Central African Republic",
-			"TD" => "Chad",
-			"CL" => "Chile",
-			"CN" => "China",
-			"CX" => "Christmas Island",
-			"CC" => "Cocos [Keeling] Islands",
-			"CO" => "Colombia",
-			"KM" => "Comoros",
-			"CG" => "Congo - Brazzaville",
-			"CD" => "Congo - Kinshasa",
-			"CK" => "Cook Islands",
-			"CR" => "Costa Rica",
-			"HR" => "Croatia",
-			"CU" => "Cuba",
-			"CY" => "Cyprus",
-			"CZ" => "Czech Republic",
-			"CI" => "Côte d’Ivoire",
-			"DK" => "Denmark",
-			"DJ" => "Djibouti",
-			"DM" => "Dominica",
-			"DO" => "Dominican Republic",
-			"NQ" => "Dronning Maud Land",
-			"DD" => "East Germany",
-			"EC" => "Ecuador",
-			"EG" => "Egypt",
-			"SV" => "El Salvador",
-			"GQ" => "Equatorial Guinea",
-			"ER" => "Eritrea",
-			"EE" => "Estonia",
-			"ET" => "Ethiopia",
-			"FK" => "Falkland Islands",
-			"FO" => "Faroe Islands",
-			"FJ" => "Fiji",
-			"FI" => "Finland",
-			"FR" => "France",
-			"GF" => "French Guiana",
-			"PF" => "French Polynesia",
-			"TF" => "French Southern Territories",
-			"FQ" => "French Southern and Antarctic Territories",
-			"GA" => "Gabon",
-			"GM" => "Gambia",
-			"GE" => "Georgia",
-			"DE" => "Germany",
-			"GH" => "Ghana",
-			"GI" => "Gibraltar",
-			"GR" => "Greece",
-			"GL" => "Greenland",
-			"GD" => "Grenada",
-			"GP" => "Guadeloupe",
-			"GU" => "Guam",
-			"GT" => "Guatemala",
-			"GG" => "Guernsey",
-			"GN" => "Guinea",
-			"GW" => "Guinea-Bissau",
-			"GY" => "Guyana",
-			"HT" => "Haiti",
-			"HM" => "Heard Island and McDonald Islands",
-			"HN" => "Honduras",
-			"HK" => "Hong Kong SAR China",
-			"HU" => "Hungary",
-			"IS" => "Iceland",
-			"IN" => "India",
-			"ID" => "Indonesia",
-			"IR" => "Iran",
-			"IQ" => "Iraq",
-			"IE" => "Ireland",
-			"IM" => "Isle of Man",
-			"IL" => "Israel",
-			"IT" => "Italy",
-			"JM" => "Jamaica",
-			"JP" => "Japan",
-			"JE" => "Jersey",
-			"JT" => "Johnston Island",
-			"JO" => "Jordan",
-			"KZ" => "Kazakhstan",
-			"KE" => "Kenya",
-			"KI" => "Kiribati",
-			"KW" => "Kuwait",
-			"KG" => "Kyrgyzstan",
-			"LA" => "Laos",
-			"LV" => "Latvia",
-			"LB" => "Lebanon",
-			"LS" => "Lesotho",
-			"LR" => "Liberia",
-			"LY" => "Libya",
-			"LI" => "Liechtenstein",
-			"LT" => "Lithuania",
-			"LU" => "Luxembourg",
-			"MO" => "Macau SAR China",
-			"MK" => "Macedonia",
-			"MG" => "Madagascar",
-			"MW" => "Malawi",
-			"MY" => "Malaysia",
-			"MV" => "Maldives",
-			"ML" => "Mali",
-			"MT" => "Malta",
-			"MH" => "Marshall Islands",
-			"MQ" => "Martinique",
-			"MR" => "Mauritania",
-			"MU" => "Mauritius",
-			"YT" => "Mayotte",
-			"FX" => "Metropolitan France",
-			"MX" => "Mexico",
-			"FM" => "Micronesia",
-			"MI" => "Midway Islands",
-			"MD" => "Moldova",
-			"MC" => "Monaco",
-			"MN" => "Mongolia",
-			"ME" => "Montenegro",
-			"MS" => "Montserrat",
-			"MA" => "Morocco",
-			"MZ" => "Mozambique",
-			"MM" => "Myanmar [Burma]",
-			"NA" => "Namibia",
-			"NR" => "Nauru",
-			"NP" => "Nepal",
-			"NL" => "Netherlands",
-			"AN" => "Netherlands Antilles",
-			"NT" => "Neutral Zone",
-			"NC" => "New Caledonia",
-			"NZ" => "New Zealand",
-			"NI" => "Nicaragua",
-			"NE" => "Niger",
-			"NG" => "Nigeria",
-			"NU" => "Niue",
-			"NF" => "Norfolk Island",
-			"KP" => "North Korea",
-			"VD" => "North Vietnam",
-			"MP" => "Northern Mariana Islands",
-			"NO" => "Norway",
-			"OM" => "Oman",
-			"PC" => "Pacific Islands Trust Territory",
-			"PK" => "Pakistan",
-			"PW" => "Palau",
-			"PS" => "Palestinian Territories",
-			"PA" => "Panama",
-			"PZ" => "Panama Canal Zone",
-			"PG" => "Papua New Guinea",
-			"PY" => "Paraguay",
-			"YD" => "People's Democratic Republic of Yemen",
-			"PE" => "Peru",
-			"PH" => "Philippines",
-			"PN" => "Pitcairn Islands",
-			"PL" => "Poland",
-			"PT" => "Portugal",
-			"PR" => "Puerto Rico",
-			"QA" => "Qatar",
-			"RO" => "Romania",
-			"RU" => "Russia",
-			"RW" => "Rwanda",
-			"RE" => "Réunion",
-			"BL" => "Saint Barthélemy",
-			"SH" => "Saint Helena",
-			"KN" => "Saint Kitts and Nevis",
-			"LC" => "Saint Lucia",
-			"MF" => "Saint Martin",
-			"PM" => "Saint Pierre and Miquelon",
-			"VC" => "Saint Vincent and the Grenadines",
-			"WS" => "Samoa",
-			"SM" => "San Marino",
-			"SA" => "Saudi Arabia",
-			"SN" => "Senegal",
-			"RS" => "Serbia",
-			"CS" => "Serbia and Montenegro",
-			"SC" => "Seychelles",
-			"SL" => "Sierra Leone",
-			"SG" => "Singapore",
-			"SK" => "Slovakia",
-			"SI" => "Slovenia",
-			"SB" => "Solomon Islands",
-			"SO" => "Somalia",
-			"ZA" => "South Africa",
-			"GS" => "South Georgia and the South Sandwich Islands",
-			"KR" => "South Korea",
-			"ES" => "Spain",
-			"LK" => "Sri Lanka",
-			"SD" => "Sudan",
-			"SR" => "Suriname",
-			"SJ" => "Svalbard and Jan Mayen",
-			"SZ" => "Swaziland",
-			"SE" => "Sweden",
-			"CH" => "Switzerland",
-			"SY" => "Syria",
-			"ST" => "São Tomé and Príncipe",
-			"TW" => "Taiwan",
-			"TJ" => "Tajikistan",
-			"TZ" => "Tanzania",
-			"TH" => "Thailand",
-			"TL" => "Timor-Leste",
-			"TG" => "Togo",
-			"TK" => "Tokelau",
-			"TO" => "Tonga",
-			"TT" => "Trinidad and Tobago",
-			"TN" => "Tunisia",
-			"TR" => "Turkey",
-			"TM" => "Turkmenistan",
-			"TC" => "Turks and Caicos Islands",
-			"TV" => "Tuvalu",
-			"UM" => "U.S. Minor Outlying Islands",
-			"PU" => "U.S. Miscellaneous Pacific Islands",
-			"VI" => "U.S. Virgin Islands",
-			"UG" => "Uganda",
-			"UA" => "Ukraine",
-			"SU" => "Union of Soviet Socialist Republics",
-			"AE" => "United Arab Emirates",
-			"GB" => "United Kingdom",
-			"US" => "United States",
-			"ZZ" => "Unknown or Invalid Region",
-			"UY" => "Uruguay",
-			"UZ" => "Uzbekistan",
-			"VU" => "Vanuatu",
-			"VA" => "Vatican City",
-			"VE" => "Venezuela",
-			"VN" => "Vietnam",
-			"WK" => "Wake Island",
-			"WF" => "Wallis and Futuna",
-			"EH" => "Western Sahara",
-			"YE" => "Yemen",
-			"ZM" => "Zambia",
-			"ZW" => "Zimbabwe",
-			"AX" => "Åland Islands",
-		);
-
-		var array $flags_array = array(
-			'sq'      => array(
-				'sq',
-				'sq.svg',
-				'Albanian'
-			),
-			'ar'      => array(
-				'ar',
-				'ar.svg',
-				'Arabic'
-			),
-			'hy'      => array(
-				'hy',
-				'hy.svg',
-				'Armenian'
-			),
-			'az'      => array(
-				'az',
-				'az.svg',
-				'Azerbaijani'
-			),
-			'eu'      => array(
-				'eu',
-				'eu.svg',
-				'Basque'
-			),
-			'bn'      => array(
-				'bn',
-				'bn.svg',
-				'Bengali'
-			),
-			'bs'      => array(
-				'bs',
-				'bs.svg',
-				'Bosnian'
-			),
-			'bg'      => array(
-				'bg',
-				'bg.svg',
-				'Bulgarian'
-			),
-			'ca'      => array(
-				'ca',
-				'ca.svg',
-				'Catalan'
-			),
-			'zh-hans' => array(
-				'zh-hans',
-				'zh-hans.svg',
-				'Chinese (Simplified)'
-			),
-			'zh-hant' => array(
-				'zh-hant',
-				'zh-hant.svg',
-				'Chinese (Traditional)'
-			),
-			'hr'      => array(
-				'hr',
-				'hr.svg',
-				'Croatian'
-			),
-			'cs'      => array(
-				'cs',
-				'cs.svg',
-				'Czech'
-			),
-			'da'      => array(
-				'da',
-				'da.svg',
-				'Danish'
-			),
-			'nl'      => array(
-				'nl',
-				'nl.svg',
-				'Dutch'
-			),
-			'en'      => array(
-				'en',
-				'us.png',
-				'English'
-			),
-			'eo'      => array(
-				'eo',
-				'eo.svg',
-				'Esperanto'
-			),
-			'et'      => array(
-				'et',
-				'et.svg',
-				'Estonian'
-			),
-			'fi'      => array(
-				'fi',
-				'fi.svg',
-				'Finnish'
-			),
-			'fr'      => array(
-				'fr',
-				'fr.svg',
-				'French	'
-			),
-			'gl'      => array(
-				'gl',
-				'gl.svg',
-				'Galician'
-			),
-			'de'      => array(
-				'de',
-				'de.svg',
-				'German	'
-			),
-			'el'      => array(
-				'el',
-				'el.svg',
-				'Greek	'
-			),
-			'he'      => array(
-				'he',
-				'he.svg',
-				'Hebrew	'
-			),
-			'hi'      => array(
-				'hi',
-				'hi.svg',
-				'Hindi	'
-			),
-			'hu'      => array(
-				'hu',
-				'hu.svg',
-				'Hungarian'
-			),
-			'is'      => array(
-				'is',
-				'is.svg',
-				'Icelandic'
-			),
-			'id'      => array(
-				'id',
-				'id.svg',
-				'Indonesian'
-			),
-			'ga'      => array(
-				'ga',
-				'ga.svg',
-				'Irish'
-			),
-			'it'      => array(
-				'it',
-				'it.svg',
-				'Italian'
-			),
-			'ja'      => array(
-				'ja',
-				'ja.svg',
-				'Japanese'
-			),
-			'ko'      => array(
-				'ko',
-				'ko.svg',
-				'Korean'
-			),
-			'ku'      => array(
-				'ku',
-				'ku.svg',
-				'Kurdish'
-			),
-			'lv'      => array(
-				'lv',
-				'lv.svg',
-				'Latvian'
-			),
-			'lt'      => array(
-				'lt',
-				'lt.svg',
-				'Lithuanian'
-			),
-			'mk'      => array(
-				'mk',
-				'mk.svg',
-				'Macedonian'
-			),
-			'ms'      => array(
-				'ms',
-				'ms.svg',
-				'Malay'
-			),
-			'mt'      => array(
-				'mt',
-				'mt.svg',
-				'Maltese'
-			),
-			'mn'      => array(
-				'mn',
-				'mn.svg',
-				'Mongolian'
-			),
-			'ne'      => array(
-				'ne',
-				'ne.svg',
-				'Nepali'
-			),
-			'no'      => array(
-				'no',
-				'no.svg',
-				'Norwegian Bokmål'
-			),
-			'fa'      => array(
-				'fa',
-				'fa.svg',
-				'Persian'
-			),
-			'pl'      => array(
-				'pl',
-				'pl.svg',
-				'Polish	'
-			),
-			'pt-br'   => array(
-				'pt-br',
-				'pt-br.svg',
-				'Portuguese (Brazil)'
-			),
-			'pt-pt'   => array(
-				'pt-pt',
-				'pt-pt.svg',
-				'Portuguese (Portugal)'
-			),
-			'pa'      => array(
-				'pa',
-				'pa.svg',
-				'Punjabi'
-			),
-			'qu'      => array(
-				'qu',
-				'qu.svg',
-				'Quechua'
-			),
-			'ro'      => array(
-				'ro',
-				'ro.svg',
-				'Romanian'
-			),
-			'ru'      => array(
-				'ru',
-				'ru.svg',
-				'Russian'
-			),
-			'sr'      => array(
-				'sr',
-				'sr.svg',
-				'Serbian'
-			),
-			'sk'      => array(
-				'sk',
-				'sk.svg',
-				'Slovak'
-			),
-			'sl'      => array(
-				'sl',
-				'sl.svg',
-				'Slovenian'
-			),
-			'so'      => array(
-				'so',
-				'so.svg',
-				'Somali'
-			),
-			'es'      => array(
-				'es',
-				'es.svg',
-				'Spanish'
-			),
-			'es-us'   => array(
-				'es-us',
-				'us.png',
-				'Spanish (US)'
-			),
-			'sv'      => array(
-				'sv',
-				'sv.svg',
-				'Swedish'
-			),
-			'ta'      => array(
-				'ta',
-				'ta.svg',
-				'Tamil'
-			),
-			'th'      => array(
-				'th',
-				'th.svg',
-				'Thai'
-			),
-			'tr'      => array(
-				'tr',
-				'tr.svg',
-				'Turkish'
-			),
-			'uk'      => array(
-				'uk',
-				'uk.svg',
-				'Ukrainian'
-			),
-			'ur'      => array(
-				'ur',
-				'ur.svg',
-				'Urdu'
-			),
-			'uz'      => array(
-				'uz',
-				'uz.svg',
-				'Uzbek'
-			),
-			'vi'      => array(
-				'vi',
-				'vi.svg',
-				'Vietnamese'
-			),
-			'cy'      => array(
-				'cy',
-				'cy.svg',
-				'Welsh'
-			),
-			'yi'      => array(
-				'yi',
-				'yi.svg',
-				'Yiddish'
-			),
-			'zu'      => array(
-				'zu',
-				'zu.svg',
-				'Zulu'
-			),
-			// Add english canadian
-			'en-ca'   => array(
-				'en-ca',
-				'en-ca.svg',
-				'English (Canada)'
-			),
-			// Add french canadian
-			'fr-ca'   => array(
-				'fr-ca',
-				'fr-ca.svg',
-				'French (Canada)'
-			),
-		);
+		private string $plugin_slug;
+		private string $version;
+		private string $cache_key;
+		private bool $cache_allowed;
+		private bool $show_direction;
 
 		public function __construct() {
-
-			if ( 'yes' === get_option( 'show_direction_link', 'yes' ) ) {
-				$this->show_direction = true;
-			}
 
 			$this->plugin_slug   = plugin_basename( __DIR__ );
 			$this->version       = LOCATION_PLUGIN_VERSION;
 			$this->cache_key     = 'store-locations';
 			$this->cache_allowed = false;
+			$this->show_direction = get_option( 'show_direction_link', 'yes' ) === 'yes';
 
+			$this->init_hooks();
+
+		}
+
+		private function init_hooks(): void {
+			// Core functionality
 			add_action( 'init', [ $this, 'location_register_post_types' ] );
-
-			add_action( 'admin_enqueue_scripts', [ $this, 'admin_store_locations_scripts' ] );
-			add_action( 'admin_enqueue_scripts', [ $this, 'admin_store_locations_styles' ] );
-
 			add_action( 'wp_enqueue_scripts', [ $this, 'store_locations_scripts' ] );
+			add_action( 'admin_enqueue_scripts', [ $this, 'admin_store_locations_scripts' ] );
 
+			// Admin UI
 			add_action( 'admin_menu', [ $this, 'store_loc_setting_page' ] );
-
-			//shortcodes
-			add_shortcode( 'language', [ $this, 'get_language_shortcode' ] );
-			add_shortcode( 'store-locations', [ $this, 'store_locations_detail' ] );
-
 			add_action( 'add_meta_boxes', [ $this, 'address_location_custom_box' ] );
 			add_action( 'save_post_locations', [ $this, 'save_address_location' ] );
 
+			// AJAX handlers
 			add_action( 'wp_ajax_search_location_near', [ $this, 'search_location_near' ] );
 			add_action( 'wp_ajax_nopriv_search_location_near', [ $this, 'search_location_near' ] );
 
+			// Admin columns and filters
 			add_filter( 'manage_locations_posts_columns', [ $this, 'columns_locations' ] );
 			add_action( 'manage_locations_posts_custom_column', [ $this, 'columns_locations_data' ], 10, 2 );
-
 			add_action( 'load-edit.php', [ $this, 'load_edit' ] );
 			add_action( 'restrict_manage_posts', [ $this, 'restrict_manage_posts' ] );
 
-			// Update functions
-			add_filter( 'plugins_api', [ $this, 'update_info' ], 20, 3 );
-			add_filter( 'site_transient_update_plugins', [ $this, 'plugin_update' ] );
-			add_action( 'upgrader_process_complete', [ $this, 'update_purge' ], 10, 2 );
-
-			// Import Page
-			add_action( 'admin_menu', [ $this, 'location_import_page' ] );
-			add_action( 'admin_menu', [ $this, 'location_export_page' ] );
-			add_action( 'admin_init', [ $this, 'location_export_request' ] );
-
-			// Add language field to bulk edit
-			add_action( 'bulk_edit_custom_box', array( $this, 'quick_edit_custom_box' ), 10, 2 );
-		}
-
-		// front end enqueue scripts
-		public function store_locations_scripts(): void {
-			wp_enqueue_script( 'jquery' );
-			wp_enqueue_style( 'store-loc-style', LOCATION_DIR_URI . 'includes/css/store-loc-plugin.css', array(), $this->version );
-
-			wp_register_script( "store-loc-js", LOCATION_DIR_URI . 'includes/js/store-loc.js', array(), $this->version, false );
-
-			$apikey = get_option( 'gmap_api_key' );
-
-			if ( ! empty( $apikey ) ) {
-				$map_api = '//maps.googleapis.com/maps/api/js?key=' . $apikey . '&callback=initgMap&libraries=places';
-				wp_register_script( 'store-google-map', $map_api );
-			}
-
-			// define some local variable
-			$local_variables = [
-				'ajax_url' => admin_url( 'admin-ajax.php' ),
-				'img_dir'  => LOCATION_DIR_URI . 'images/',
-			];
-
-			wp_localize_script( 'store-loc-js', 'front_object', $local_variables );
-		}
-
-		public function admin_store_locations_scripts(): void {
-			$apikey = get_option( 'gmap_api_key' );
-
-			if ( ! empty( $apikey ) ) {
-				$map_api = '//maps.googleapis.com/maps/api/js?key=' . $apikey;
-				wp_register_script( 'store-google-map', $map_api );
-				wp_enqueue_script( 'store-google-map' );
-			}
-
-			wp_enqueue_script( 'admin-store-js', LOCATION_DIR_URI . 'admin/js/admin-store.js', array(), $this->version, true );
-		}
-
-		public function admin_store_locations_styles(): void {
-			wp_enqueue_style( 'store-loc-admin-style', LOCATION_DIR_URI . 'admin/css/styles.css', array(), $this->version );
-		}
-
-		function get_language_shortcode() {
-			return apply_filters( 'wpml_current_language', null );
+			// Shortcodes
+			add_shortcode( 'store-locations', [ $this, 'store_locations_detail' ] );
+			add_shortcode( 'language', [ $this, 'get_language_shortcode' ] );
 		}
 
 		public function location_register_post_types(): void {
 
-			$labels = array(
-				'name'               => _x( 'Locations', '', 'store-location' ),
-				'singular_name'      => _x( 'Locations', '', 'store-location' ),
-				'menu_name'          => _x( 'Locations', '', 'store-location' ),
-				'name_admin_bar'     => _x( 'Locations', '', 'store-location' ),
-				'add_new'            => _x( 'Add New Location', '', 'store-location' ),
-				'add_new_item'       => __( 'Add New Location', 'store-location' ),
-				'new_item'           => __( 'New Location', 'store-location' ),
-				'edit_item'          => __( 'Edit Location', 'store-location' ),
-				'view_item'          => __( 'View Location', 'store-location' ),
-				'all_items'          => __( 'All Location', 'store-location' ),
-				'search_items'       => __( 'Search Location', 'store-location' ),
-				'parent_item_colon'  => __( 'Parent Location:', 'store-location' ),
-				'not_found'          => __( 'No Location found.', 'store-location' ),
-				'not_found_in_trash' => __( 'No Locations found in Trash.', 'store-location' )
+			register_post_type( 'locations', [
+				'labels' => [
+					'name' => _x( 'Locations', '', 'store-location' ),
+					'singular_name' => _x( 'Location', '', 'store-location' ),
+					'add_new' => _x( 'Add New Location', '', 'store-location' ),
+					'add_new_item' => __( 'Add New Location', 'store-location' ),
+					'edit_item' => __( 'Edit Location', 'store-location' ),
+					'view_item' => __( 'View Location', 'store-location' ),
+					'search_items' => __( 'Search Locations', 'store-location' ),
+					'not_found' => __( 'No locations found.', 'store-location' ),
+					'not_found_in_trash' => __( 'No locations found in Trash.', 'store-location' )
+				],
+				'public' => true,
+				'menu_icon' => 'dashicons-location',
+				'publicly_queryable' => false,
+				'show_ui' => true,
+				'show_in_menu' => true,
+				'query_var' => true,
+				'rewrite' => [ 'slug' => 'locations' ],
+				'capability_type' => 'post',
+				'has_archive' => false,
+				'hierarchical' => false,
+				'menu_position' => 20,
+				'supports' => [ 'title' ],
+				'show_in_rest' => true,
+				'rest_base' => 'locations',
+				'rest_controller_class' => 'StudySiteListing\\Api\\Rest_Controller'
+			] );
+
+		}
+
+		public function store_locations_scripts(): void {
+			if ( !$this->should_load_assets() ) {
+				return;
+			}
+
+			$suffix = defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ? '' : '.min';
+			
+			wp_enqueue_script(
+				'store-locations-js',
+				LOCATION_DIR_URI . "public/js/store-locations{$suffix}.js",
+				[ 'jquery', 'google-maps' ],
+				$this->version,
+				true
 			);
 
-			$args = array(
-				'labels'              => $labels,
-				'description'         => __( 'Description.', 'store-location' ),
-				'public'              => true,
-				'menu_icon'           => 'dashicons-location',
-				'publicly_queryable'  => false,
-				'show_ui'             => true,
-				'show_in_menu'        => true,
-				'query_var'           => true,
-				'rewrite'             => array( 'slug' => '' ),
-				'capability_type'     => 'post',
-				'has_archive'         => true,
-				'hierarchical'        => false,
-				'menu_position'       => null,
-				'exclude_from_search' => true,
-				'supports'            => array( 'title' )
+			wp_localize_script( 'store-locations-js', 'storeLocationsData', [
+				'ajaxurl' => admin_url( 'admin-ajax.php' ),
+				'nonce' => wp_create_nonce( 'store_locations_nonce' ),
+				'defaultDistance' => DISTANCE_MILES
+			] );
+
+			wp_enqueue_style(
+				'store-locations-css',
+				LOCATION_DIR_URI . "public/css/store-locations{$suffix}.css",
+				[],
+				$this->version
 			);
-			register_post_type( 'locations', $args );
 		}
 
-		// this is a menu setting page
-		public function store_loc_setting_page(): void {
-
-			add_menu_page( 'Location Settings', 'Location Settings', 'administrator', 'set-store-loc-setting-page', array(
-				$this,
-				'set_store_loc_setting_page'
-			), 'dashicons-admin-site', 59.96 );
-
-		}
-
-		// set the hours setting for store
-		public function set_store_loc_setting_page(): void {
-			// check capability
-			if ( current_user_can( 'manage_options' ) ) {
-				require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/store-loc-settings.php';
-
-			} else {
-				require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/restricted-access.php';
-
-			}
-		}
-
-		public function is_wpml_active(): bool {
-
-			$is_wpml_active = false;
-
-			if ( is_plugin_active( 'sitepress-multilingual-cms/sitepress.php' ) ) {
-				$is_wpml_active = true;
+		private function should_load_assets(): bool {
+			if ( is_singular( 'locations' ) ) {
+				return true;
 			}
 
-			return $is_wpml_active;
-		}
-
-		public function get_language_code() {
-
-			$language_code = 'en';
-
-			if ( $this->is_wpml_active() ) {
-				$language_code = apply_filters( 'wpml_current_language', null );
-			} else {
-				$language_code = ! empty( $_GET['lang'] ) ? sanitize_text_field( $_GET['lang'] ) : $language_code;
+			global $post;
+			if ( is_a( $post, 'WP_Post' ) && 
+				( has_shortcode( $post->post_content, 'store-locations' ) || 
+				 has_block( 'store-locations/map' ) ) ) {
+				return true;
 			}
 
-			return $language_code;
+			if ( is_admin() && 
+				isset( $_GET['post_type'] ) && 
+				$_GET['post_type'] === 'locations' ) {
+				return true;
+			}
 
+			return false;
+		}
+
+		public function get_language_shortcode() {
+			return apply_filters( 'wpml_current_language', null );
 		}
 
 		public function store_locations_detail( $atts = array() ): bool|string {
@@ -876,297 +211,363 @@ if ( ! class_exists( 'Store_Locations' ) ) {
 			return ob_get_clean();
 		}
 
-		public function address_location_custom_box(): void {
-			$screens = [ 'locations' ];
-			foreach ( $screens as $screen ) {
-				add_meta_box( 'store_location_box_id', 'Address Information', [ $this, 'address_custom_box_html' ], $screen );
-			}
-		}
-
-		public function address_custom_box_html( $post ): void {
-			global $post;
+		public function address_location_custom_box($post): void {
+			$location_data = $this->get_location_data($post->ID);
+			$countries = Location_Config::get_countries();
+			$languages = Location_Config::get_languages();
+			
+			wp_nonce_field('location_meta_box', 'location_meta_box_nonce');
 			?>
-            <style>
-                .form-table td {
-                    padding: 0;
-                }
-            </style>
+			<div class="location-meta-box">
+				<div class="location-section">
+					<h3><?php _e('Languages', 'store-location'); ?></h3>
+					<div class="language-options">
+						<?php foreach ($languages as $code => $lang): ?>
+							<label>
+								<input type="checkbox" 
+									   name="languages[]" 
+									   value="<?php echo esc_attr($code); ?>"
+									   <?php checked(in_array($code, $location_data['languages'])); ?>>
+								<?php echo esc_html($lang['name']); ?>
+							</label>
+						<?php endforeach; ?>
+					</div>
+				</div>
 
-            <table class="form-table" role="presentation">
-                <tbody>
-                <tr class="form-field form-required">
-                    <th scope="row">
-                        <label for="store_language">
-							<?php esc_html_e( 'Language', 'store-location' ); ?>
-                        </label>
-                    </th>
-                    <td>
-						<?php
-						if ( $this->is_wpml_active() ) {
-							$langs = apply_filters( 'wpml_active_languages', null, [
-								'skip_missing' => 0
-							] );
+				<div class="location-section">
+					<h3><?php _e('Address Information', 'store-location'); ?></h3>
+					<p>
+						<label for="store_address"><?php _e('Address 1', 'store-location'); ?></label>
+						<input type="text" id="store_address" name="store_address" 
+							   value="<?php echo esc_attr($location_data['address']['street1']); ?>">
+					</p>
+					<p>
+						<label for="address_2"><?php _e('Address 2', 'store-location'); ?></label>
+						<input type="text" id="address_2" name="address_2" 
+							   value="<?php echo esc_attr($location_data['address']['street2']); ?>">
+					</p>
+					<p>
+						<label for="store_city"><?php _e('City', 'store-location'); ?></label>
+						<input type="text" id="store_city" name="store_city" 
+							   value="<?php echo esc_attr($location_data['address']['city']); ?>">
+					</p>
+					<p>
+						<label for="store_state"><?php _e('State', 'store-location'); ?></label>
+						<input type="text" id="store_state" name="store_state" 
+							   value="<?php echo esc_attr($location_data['address']['state']); ?>">
+					</p>
+					<p>
+						<label for="store_zipcode"><?php _e('Zip Code', 'store-location'); ?></label>
+						<input type="text" id="store_zipcode" name="store_zipcode" 
+							   value="<?php echo esc_attr($location_data['address']['zip']); ?>">
+					</p>
+					<p>
+						<label for="country"><?php _e('Country', 'store-location'); ?></label>
+						<select id="country" name="country">
+							<option value=""><?php _e('Select Country', 'store-location'); ?></option>
+							<?php foreach ($countries as $code => $name): ?>
+								<option value="<?php echo esc_attr($code); ?>" 
+										<?php selected($code, $location_data['address']['country']); ?>>
+									<?php echo esc_html($name); ?>
+								</option>
+							<?php endforeach; ?>
+						</select>
+					</p>
+				</div>
 
-							$language_code = explode( ',', get_post_meta( $post->ID, 'languages', true ) );
-							?>
-                            <ul class="available-languages">
-								<?php foreach ( $langs as $lang ) { ?>
-                                    <li class="<?php if ( in_array( $lang['language_code'], $language_code ) ) {
-										echo '_active';
-									} ?>">
-                                        <label for="wpml-language-<?php echo $lang['language_code']; ?>">
-                                            <input type="checkbox" name="languages[]"
-                                                   id="wpml-language-<?php echo $lang['language_code']; ?>"
-                                                   value="<?php echo $lang['language_code']; ?>"
-												<?php checked( in_array( $lang['language_code'], $language_code ) ); ?>
-                                            >
-                                            <img width="18" height="12" src="<?php echo $lang['country_flag_url']; ?>"
-                                                 alt="Flag for <?php echo $lang['language_code']; ?>">
-											<?php echo $lang["native_name"]; ?> ( <?php echo $lang['language_code']; ?> )
-                                        </label>
-                                    </li>
-								<?php } ?>
-                            </ul>
-						<?php } else {
-							$flags_dir_url          = LOCATION_DIR_URI . 'images/flags/';
-							$active_languages       = get_option( 'store-loc-active-languages' );
-							$active_languages_array = explode( ',', $active_languages );
-							$language_code          = explode( ',', get_post_meta( $post->ID, 'languages', true ) );
-							?>
-                            <ul class="available-languages">
-								<?php foreach ( $this->flags_array as $value ) {
-									if ( ! in_array( $value[0], $active_languages_array ) ) {
-										continue;
-									} ?>
-                                    <li class="<?php if ( in_array( $value[0], $language_code ) ) {
-										echo '_active';
-									} ?>">
-                                        <label for="wpml-language-<?php echo $value[0]; ?>">
-                                            <input type="checkbox" name="languages[]"
-                                                   id="wpml-language-<?php echo $value[0]; ?>"
-                                                   value="<?php echo $value[0]; ?>"
-												<?php checked( in_array( $value[0], $language_code ) ); ?>
-                                            >
-                                            <img width="18" height="12" src="<?php echo $flags_dir_url . $value[1]; ?>"
-                                                 alt="Flag for <?php echo $value[0]; ?>">
-											<?php echo $value[2]; ?> ( <?php echo $value[0]; ?> )
-                                        </label>
-                                    </li>
-								<?php } ?>
-                            </ul>
-						<?php } ?>
-                    </td>
-                </tr>
-                <tr class="form-field form-required">
-                    <th scope="row">
-                        <label for="store_address">
-							<?php esc_html_e( 'Address 1', 'store-location' ); ?>
-                        </label>
-                    </th>
-                    <td>
-                        <input name="store_address" type="text" id="store_address"
-                               value="<?php echo get_post_meta( $post->ID, 'store_address', true ); ?>">
-                    </td>
-                </tr>
-                <tr class="form-field form-required">
-                    <th scope="row">
-                        <label for="address_2">
-							<?php esc_html_e( 'Address 2', 'store-location' ); ?>
-                        </label>
-                    </th>
-                    <td>
-                        <input name="address_2" type="text" id="address_2" value="<?php echo get_post_meta( $post->ID, 'address_2', true ); ?>">
-                    </td>
-                </tr>
-                <tr class="form-field">
-                    <th scope="row">
-                        <label for="store_city">
-							<?php esc_html_e( 'City', 'store-location' ); ?>
-                        </label>
-                    </th>
-                    <td>
-                        <input name="store_city" type="text" id="store_city" value="<?php echo get_post_meta( $post->ID, 'store_city', true ); ?>">
-                    </td>
-                </tr>
-                <tr class="form-field">
-                    <th scope="row">
-                        <label for="store_state">
-							<?php esc_html_e( 'State', 'store-location' ); ?>
-                        </label>
-                    </th>
-                    <td>
-                        <input name="store_state" type="text" id="store_state" value="<?php echo get_post_meta( $post->ID, 'store_state', true ); ?>">
-                    </td>
-                </tr>
-                <tr class="form-field">
-                    <th scope="row">
-                        <label for="store_zipcode">
-							<?php esc_html_e( 'Zip Code', 'store-location' ); ?>
-                        </label>
-                    </th>
-                    <td>
-                        <input name="store_zipcode" type="text" id="store_zipcode"
-                               value="<?php echo get_post_meta( $post->ID, 'store_zipcode', true ); ?>">
-                    </td>
-                </tr>
-                <tr class="form-field">
-                    <th scope="row">
-                        <label for="store-country">
-							<?php esc_html_e( 'Country', 'store-location' ); ?>
-                        </label>
-                    </th>
-                    <td>
-						<?php $country = get_post_meta( $post->ID, 'country', true ); ?>
-                        <select name="country" id="store-country">
-                            <option value="" <?php selected( ! in_array( $country, $this->country_list ) ) ?>>
-                                Select Country
-                            </option>
-							<?php foreach ( $this->country_list as $key => $value ) {
-								$key = strtolower( $key ); ?>
-                                <option value="<?php echo $key; ?>" <?php selected( $key, $country ) ?>>
-									<?php echo $value; ?>
-                                </option>
-							<?php } ?>
-                        </select>
-                    </td>
-                </tr>
-                <tr class="form-field">
-                    <th scope="row">
-                        <label for="map_lat">
-							<?php esc_html_e( 'Latitude', 'store-location' ); ?>
-                        </label>
-                    </th>
-                    <td>
-                        <input name="map_lat" type="text" id="map_lat" value="<?php echo get_post_meta( $post->ID, 'map_lat', true ); ?>" readonly>
-                        <p>Automatically will be filled as click on geocode button</p>
-                    </td>
-                </tr>
-                <tr class="form-field">
-                    <th scope="row">
-                        <label for="map_lng">
-							<?php esc_html_e( 'Longitude', 'store-location' ); ?>
-                        </label>
-                    </th>
-                    <td>
-                        <input name="map_lng" type="text" id="map_lng" value="<?php echo get_post_meta( $post->ID, 'map_lng', true ); ?>" readonly>
-                        <p>Automatically will be filled as click on geocode button</p>
-                    </td>
-                </tr>
-                <tr class="form-field">
-                    <th scope="row">
-                        <label for="getlat-lng">
-							<?php esc_html_e( 'Get Lat/Long', 'store-location' ); ?>
-                        </label>
-                    </th>
-                    <td>
-                        <button type="button" id="geo_code_btn">
-							<?php esc_html_e( 'Geocode Address', 'store-location' ); ?>
-                        </button>
-                    </td>
-                </tr>
+				<div class="location-section">
+					<h3><?php _e('Contact Information', 'store-location'); ?></h3>
+					<p>
+						<label for="provider_name"><?php _e('Provider Name', 'store-location'); ?></label>
+						<input type="text" id="provider_name" name="provider_name" 
+							   value="<?php echo esc_attr($location_data['contact']['provider_name']); ?>">
+					</p>
+					<p>
+						<label for="contact_name"><?php _e('Contact Name', 'store-location'); ?></label>
+						<input type="text" id="contact_name" name="contact_name" 
+							   value="<?php echo esc_attr($location_data['contact']['contact_name']); ?>">
+					</p>
+					<p>
+						<label for="phone_no"><?php _e('Phone', 'store-location'); ?></label>
+						<input type="tel" id="phone_no" name="phone_no" 
+							   value="<?php echo esc_attr($location_data['contact']['phone']); ?>">
+					</p>
+					<p>
+						<label for="email"><?php _e('Email', 'store-location'); ?></label>
+						<input type="email" id="email" name="email" 
+							   value="<?php echo esc_attr($location_data['contact']['email']); ?>">
+					</p>
+					<p>
+						<label for="website_url"><?php _e('Website', 'store-location'); ?></label>
+						<input type="url" id="website_url" name="website_url" 
+							   value="<?php echo esc_url($location_data['contact']['website']); ?>">
+					</p>
+				</div>
 
-                <tr class="form-field">
-                    <th scope="row">
-                        <label for="website_url">
-							<?php esc_html_e( 'Website', 'store-location' ); ?>
-                        </label>
-                    </th>
-                    <td>
-                        <input name="website_url" type="text" id="website_url" class="code"
-                               value="<?php echo get_post_meta( $post->ID, 'website_url', true ); ?>">
-                    </td>
-                </tr>
-                <tr class="form-field">
-                    <th scope="row">
-                        <label for="phone_no">
-							<?php esc_html_e( 'Phone Number', 'store-location' ); ?>
-                        </label>
-                    </th>
-                    <td>
-                        <input name="phone_no" type="text" id="phone_no" value="<?php echo get_post_meta( $post->ID, 'phone_no', true ); ?>">
-                    </td>
-                </tr>
-                <tr class="form-field">
-                    <th scope="row">
-                        <label for="email">
-							<?php esc_html_e( 'Email', 'store-location' ); ?>
-                        </label>
-                    </th>
-                    <td>
-                        <input name="email" type="text" id="email" value="<?php echo get_post_meta( $post->ID, 'email', true ); ?>">
-                    </td>
-                </tr>
-                <tr class="form-field">
-                    <th scope="row">
-                        <label for="provider_name">
-							<?php esc_html_e( 'Provider Name', 'store-location' ); ?>
-                        </label>
-                    </th>
-                    <td>
-                        <input name="provider_name" type="text" id="provider_name"
-                               value="<?php echo get_post_meta( $post->ID, 'provider_name', true ); ?>">
-                    </td>
-                </tr>
+				<div class="location-section">
+					<h3><?php _e('Map Information', 'store-location'); ?></h3>
+					<p>
+						<label for="map_lat"><?php _e('Latitude', 'store-location'); ?></label>
+						<input type="text" id="map_lat" name="map_lat" readonly 
+							   value="<?php echo esc_attr($location_data['coordinates']['lat']); ?>">
+					</p>
+					<p>
+						<label for="map_lng"><?php _e('Longitude', 'store-location'); ?></label>
+						<input type="text" id="map_lng" name="map_lng" readonly 
+							   value="<?php echo esc_attr($location_data['coordinates']['lng']); ?>">
+					</p>
+					<p>
+						<button type="button" id="geo_code_btn" class="button">
+							<?php _e('Geocode Address', 'store-location'); ?>
+						</button>
+					</p>
+				</div>
 
-                <tr class="form-field">
-                    <th scope="row">
-                        <label for="contact_name">
-							<?php esc_html_e( 'Contact Name', 'store-location' ); ?>
-                        </label>
-                    </th>
-                    <td>
-                        <input name="contact_name" type="text" id="contact_name"
-                               value="<?php echo get_post_meta( $post->ID, 'contact_name', true ); ?>">
-                    </td>
-                </tr>
-
-                <tr class="form-field">
-                    <th scope="row">
-                        <label for="study">
-							<?php esc_html_e( 'Study', 'store-location' ); ?>
-                        </label>
-                    </th>
-                    <td>
-                        <input name="study" type="text" id="study" value="<?php echo get_post_meta( $post->ID, 'study', true ); ?>">
-                    </td>
-                </tr>
-
-                </tbody>
-            </table>
+				<div class="location-section">
+					<h3><?php _e('Additional Information', 'store-location'); ?></h3>
+					<p>
+						<label for="study"><?php _e('Study', 'store-location'); ?></label>
+						<input type="text" id="study" name="study" 
+							   value="<?php echo esc_attr($location_data['study']); ?>">
+					</p>
+				</div>
+			</div>
 			<?php
 		}
 
-		public function save_address_location( $post_id ): void {
-			// If we are on the bulk edit screen, update post languages
-			if ( isset( $_REQUEST['bulk_edit'] ) ) {
-
-				$languages = implode( ',', $_REQUEST['languages'] );
-				update_post_meta( $post_id, 'languages', $languages );
-
+		public function save_address_location($post_id): void {
+			if (!isset($_POST['location_meta_box_nonce']) || 
+				!wp_verify_nonce($_POST['location_meta_box_nonce'], 'location_meta_box')) {
 				return;
 			}
 
-			// If we are doing a quick edit
-			if ( isset( $_REQUEST['action'] ) && 'inline-save' === $_REQUEST['action'] ) {
+			if (!current_user_can('edit_post', $post_id)) {
 				return;
 			}
 
-			update_post_meta( $post_id, 'language_code', isset( $_POST['language_code'] ) ? strtolower( sanitize_text_field( $_POST['language_code'] ) ) : '' );
-			update_post_meta( $post_id, 'languages', isset( $_POST['languages'] ) ? implode( ',', (array) $_POST['languages'] ) : '' );
-			update_post_meta( $post_id, 'country', isset( $_POST['country'] ) ? sanitize_text_field( $_POST['country'] ) : '' );
-			update_post_meta( $post_id, 'store_address', isset( $_POST['store_address'] ) ? sanitize_text_field( $_POST['store_address'] ) : '' );
-			update_post_meta( $post_id, 'address_2', isset( $_POST['address_2'] ) ? sanitize_text_field( $_POST['address_2'] ) : '' );
-			update_post_meta( $post_id, 'store_city', isset( $_POST['store_city'] ) ? sanitize_text_field( $_POST['store_city'] ) : '' );
-			update_post_meta( $post_id, 'store_state', isset( $_POST['store_state'] ) ? sanitize_text_field( $_POST['store_state'] ) : '' );
-			update_post_meta( $post_id, 'store_zipcode', isset( $_POST['store_zipcode'] ) ? sanitize_text_field( $_POST['store_zipcode'] ) : '' );
-			update_post_meta( $post_id, 'map_lat', $_POST['map_lat'] ?? '' );
-			update_post_meta( $post_id, 'map_lng', $_POST['map_lng'] ?? '' );
-			update_post_meta( $post_id, 'website_url', isset( $_POST['website_url'] ) ? sanitize_text_field( $_POST['website_url'] ) : '' );
-			update_post_meta( $post_id, 'phone_no', isset( $_POST['phone_no'] ) ? sanitize_text_field( $_POST['phone_no'] ) : '' );
-			update_post_meta( $post_id, 'email', isset( $_POST['email'] ) ? sanitize_text_field( $_POST['email'] ) : '' );
-			update_post_meta( $post_id, 'provider_name', isset( $_POST['provider_name'] ) ? sanitize_text_field( $_POST['provider_name'] ) : '' );
-			update_post_meta( $post_id, 'contact_name', isset( $_POST['contact_name'] ) ? sanitize_text_field( $_POST['contact_name'] ) : '' );
-			update_post_meta( $post_id, 'study', isset( $_POST['study'] ) ? sanitize_text_field( $_POST['study'] ) : '' );
+			try {
+				// Save consolidated data
+				$this->save_location_data($post_id, $_POST);
+
+				// Geocode if address changed
+				$address_parts = array_filter([
+					$_POST['store_address'] ?? '',
+					$_POST['store_city'] ?? '',
+					$_POST['store_state'] ?? '',
+					$_POST['country'] ?? '',
+					$_POST['store_zipcode'] ?? ''
+				]);
+				
+				if (!empty($address_parts)) {
+					$full_address = implode(', ', $address_parts);
+					$location = $this->geocode($full_address);
+					
+					if ($location) {
+						$data = $this->get_location_data($post_id);
+						$data['coordinates'] = [
+							'lat' => $location['lat'],
+							'lng' => $location['lng']
+						];
+						$data['address']['formatted'] = $location['formatted_address'];
+						$this->save_location_data($post_id, $data);
+					}
+				}
+			} catch (\Exception $e) {
+				error_log('Error saving location: ' . $e->getMessage());
+				add_action('admin_notices', function() {
+					echo '<div class="error"><p>An error occurred while saving the location. Please try again.</p></div>';
+				});
+			}
+		}
+
+		public function columns_locations($columns): array {
+			return [
+				'cb' => $columns['cb'],
+				'title' => __('Title', 'store-location'),
+				'languages' => __('Languages', 'store-location'),
+				'address' => __('Address', 'store-location'),
+				'contact' => __('Contact', 'store-location'),
+				'study' => __('Study', 'store-location')
+			];
+		}
+
+		public function columns_locations_data($column, $post_id): void {
+			$location_data = $this->get_location_data($post_id);
+			
+			switch ($column) {
+				case 'languages':
+					$languages = Location_Config::get_languages();
+					$active = array_intersect_key($languages, array_flip($location_data['languages']));
+					echo implode(', ', array_column($active, 'name'));
+					break;
+					
+				case 'address':
+					$address = $location_data['address'];
+					$parts = array_filter([
+						$address['street1'],
+						$address['city'],
+						$address['state'],
+						$address['zip']
+					]);
+					echo implode(', ', $parts);
+					break;
+					
+				case 'contact':
+					$contact = $location_data['contact'];
+					if ($contact['provider_name']) {
+						echo '<strong>' . esc_html($contact['provider_name']) . '</strong><br>';
+					}
+					if ($contact['phone']) {
+						echo esc_html($contact['phone']) . '<br>';
+					}
+					if ($contact['email']) {
+						echo '<a href="mailto:' . esc_attr($contact['email']) . '">' . 
+							 esc_html($contact['email']) . '</a>';
+					}
+					break;
+					
+				case 'study':
+					echo esc_html($location_data['study']);
+					break;
+			}
+		}
+
+		/**
+		 * Geocode an address with error handling and caching
+		 */
+		public function geocode($address): ?array {
+			if (empty($address)) {
+				return null;
+			}
+
+			// Generate cache key
+			$cache_key = 'geocode_' . md5($address);
+			
+			// Try to get cached result
+			$cached_result = get_transient($cache_key);
+			if (false !== $cached_result) {
+				return $cached_result;
+			}
+
+			// Get API key
+			$api_key = get_option('gmap_api_key');
+			if (empty($api_key)) {
+				error_log('Google Maps API key is not set');
+				return null;
+			}
+
+			try {
+				// Prepare the address for the URL
+				$address = urlencode($address);
+				
+				// Create the URL
+				$url = sprintf(
+					'https://maps.googleapis.com/maps/api/geocode/json?address=%s&key=%s',
+					$address,
+					$api_key
+				);
+
+				// Make the request
+				$response = wp_remote_get($url, [
+					'timeout' => 5,
+					'headers' => ['Accept' => 'application/json']
+				]);
+
+				// Check for errors
+				if (is_wp_error($response)) {
+					throw new \Exception($response->get_error_message());
+				}
+
+				// Parse the response
+				$data = json_decode(wp_remote_retrieve_body($response), true);
+
+				// Check response status
+				if ($data['status'] !== 'OK') {
+					throw new \Exception('Geocoding failed: ' . ($data['error_message'] ?? $data['status']));
+				}
+
+				// Extract the location data
+				$result = [
+					'lat' => $data['results'][0]['geometry']['location']['lat'],
+					'lng' => $data['results'][0]['geometry']['location']['lng'],
+					'formatted_address' => $data['results'][0]['formatted_address']
+				];
+
+				// Cache the result for 30 days
+				set_transient($cache_key, $result, 30 * DAY_IN_SECONDS);
+
+				return $result;
+			} catch (\Exception $e) {
+				error_log('Geocoding error: ' . $e->getMessage());
+				return null;
+			}
+		}
+
+		/**
+		 * Save location data
+		 */
+		private function save_location_data($post_id, array $data): void {
+			$location_data = [
+				'address' => [
+					'street1' => sanitize_text_field($data['store_address'] ?? ''),
+					'street2' => sanitize_text_field($data['address_2'] ?? ''),
+					'city' => sanitize_text_field($data['store_city'] ?? ''),
+					'state' => sanitize_text_field($data['store_state'] ?? ''),
+					'zip' => sanitize_text_field($data['store_zipcode'] ?? ''),
+					'country' => sanitize_text_field($data['country'] ?? ''),
+					'formatted' => sanitize_text_field($data['formatted_address'] ?? '')
+				],
+				'contact' => [
+					'phone' => sanitize_text_field($data['phone_no'] ?? ''),
+					'email' => sanitize_email($data['email'] ?? ''),
+					'website' => esc_url_raw($data['website_url'] ?? ''),
+					'provider_name' => sanitize_text_field($data['provider_name'] ?? ''),
+					'contact_name' => sanitize_text_field($data['contact_name'] ?? '')
+				],
+				'coordinates' => [
+					'lat' => (float)($data['map_lat'] ?? 0),
+					'lng' => (float)($data['map_lng'] ?? 0)
+				],
+				'languages' => array_map('sanitize_text_field', (array)($data['languages'] ?? ['en'])),
+				'study' => sanitize_text_field($data['study'] ?? ''),
+				'updated_at' => current_time('mysql')
+			];
+
+			update_post_meta($post_id, '_location_data', $location_data);
+		}
+
+		/**
+		 * Get location data
+		 */
+		private function get_location_data($post_id): array {
+			$default_data = [
+				'address' => [
+					'street1' => '',
+					'street2' => '',
+					'city' => '',
+					'state' => '',
+					'zip' => '',
+					'country' => '',
+					'formatted' => ''
+				],
+				'contact' => [
+					'phone' => '',
+					'email' => '',
+					'website' => '',
+					'provider_name' => '',
+					'contact_name' => ''
+				],
+				'coordinates' => [
+					'lat' => 0,
+					'lng' => 0
+				],
+				'languages' => ['en'],
+				'study' => '',
+				'updated_at' => ''
+			];
+
+			$data = get_post_meta($post_id, '_location_data', true);
+			return is_array($data) ? array_merge($default_data, $data) : $default_data;
 		}
 
 		public function search_location_near(): void {
@@ -1225,8 +626,8 @@ if ( ! class_exists( 'Store_Locations' ) ) {
 					);
 				}
 				if ( $study ) {
-					// Remove ” or " from the study string
-					$study = str_replace( array( '”', '“', '"' ), '', $study );
+					// Remove " or " from the study string
+					$study = str_replace( array( '"', '"', '"' ), '', $study );
 
 					// Remove any white space from the study string
 					$study = trim( $study );
@@ -1609,79 +1010,95 @@ if ( ! class_exists( 'Store_Locations' ) ) {
 			return ob_get_clean();
 		}
 
-		public function get_nearby_locations( $lat, $long, $lang, $distance = 50 ): array|object {
+		/**
+		 * Get nearby locations with optimized query and caching
+		 */
+		public function get_nearby_locations($lat, $lng, $lang = '', $distance = 50): array {
 			global $wpdb;
-			$nearbyLocations = $wpdb->get_results( "SELECT DISTINCT    
-				map_lat.post_id,
-				map_lat.meta_key,
-				map_lat.meta_value as lat,
-				map_lng.meta_value as lng,
-				((ACOS(SIN($lat * PI() / 180) * SIN(map_lat.meta_value * PI() / 180) + COS($lat * PI() / 180) * COS(map_lat.meta_value * PI() / 180) * COS(($long - map_lng.meta_value) * PI() / 180)) * 180 / PI()) * 60 * 1.1515) AS distance,
-				$wpdb->posts.post_title
-			FROM 
-				$wpdb->postmeta AS map_lat
-				LEFT JOIN $wpdb->postmeta as map_lng ON map_lat.post_id = map_lng.post_id
-				INNER JOIN $wpdb->posts ON $wpdb->posts.ID = map_lat.post_id  
-				WHERE map_lat.meta_key = 'map_lat' AND map_lng.meta_key = 'map_lng'
-				HAVING distance < $distance
-				ORDER BY distance ASC;", ARRAY_A );
-
-			if ( $nearbyLocations ) {
-				return $nearbyLocations;
+			
+			// Generate cache key
+			$cache_key = "nearby_locations_{$lat}_{$lng}_{$lang}_{$distance}";
+			$cached_results = wp_cache_get($cache_key);
+			
+			if (false !== $cached_results) {
+				return $cached_results;
 			}
 
-			return array();
+			// Sanitize inputs
+			$lat = floatval($lat);
+			$lng = floatval($lng);
+			$distance = intval($distance);
+
+			// Get locations with coordinates
+			$locations = $wpdb->get_results(
+				$wpdb->prepare(
+					"SELECT 
+						p.ID as post_id,
+						p.post_title,
+						pm.meta_value as location_data
+					FROM 
+						{$wpdb->posts} p
+						INNER JOIN {$wpdb->postmeta} pm ON p.ID = pm.post_id
+					WHERE 
+						p.post_type = 'locations'
+						AND p.post_status = 'publish'
+						AND pm.meta_key = '_location_data'",
+					[]
+				),
+				ARRAY_A
+			);
+
+			$nearby_locations = [];
+			foreach ($locations as $location) {
+				$data = maybe_unserialize($location['location_data']);
+				if (!is_array($data) || empty($data['coordinates'])) {
+					continue;
+				}
+
+				$loc_lat = $data['coordinates']['lat'];
+				$loc_lng = $data['coordinates']['lng'];
+
+				// Calculate distance using Haversine formula
+				$distance_calc = $this->calculate_distance($lat, $lng, $loc_lat, $loc_lng);
+				
+				if ($distance_calc <= $distance) {
+					$nearby_locations[] = [
+						'post_id' => $location['post_id'],
+						'post_title' => $location['post_title'],
+						'lat' => $loc_lat,
+						'lng' => $loc_lng,
+						'distance' => $distance_calc,
+						'data' => $data
+					];
+				}
+			}
+
+			// Sort by distance
+			usort($nearby_locations, function($a, $b) {
+				return $a['distance'] <=> $b['distance'];
+			});
+
+			// Cache results for 1 hour
+			wp_cache_set($cache_key, $nearby_locations, '', HOUR_IN_SECONDS);
+			
+			return $nearby_locations;
+		}
+
+		/**
+		 * Calculate distance between two points using Haversine formula
+		 */
+		private function calculate_distance($lat1, $lon1, $lat2, $lon2): float {
+			$theta = $lon1 - $lon2;
+			$dist = sin(deg2rad($lat1)) * sin(deg2rad($lat2)) + cos(deg2rad($lat1)) * cos(deg2rad($lat2)) * cos(deg2rad($theta));
+			$dist = acos($dist);
+			$dist = rad2deg($dist);
+			$miles = $dist * 60 * 1.1515;
+			
+			return round($miles, 2);
 		}
 
 		//****************************************************************************/
 		// Admin Custom Columns Languages and Country
-		//****************************************************************************/
-		public function columns_locations( $columns ) {
-
-			$columns['lang']    = 'Languages';
-			$columns['country'] = 'Country';
-			$columns['study']   = 'Study';
-
-			return $columns;
-		}
-
-		public function columns_locations_data( $column, $post_id ): void {
-			switch ( $column ) {
-				case 'lang':
-					$language_codes = get_post_meta( $post_id, 'languages', true );
-
-					if ( $language_codes ) {
-						$lang_array = explode( ',', $language_codes );
-						$res        = array();
-						foreach ( $lang_array as $value ) {
-							$res[] = $this->flags_array[ trim( $value ) ][2] . ' (' . $value . ')';
-						}
-						echo implode( ', ', $res );
-					} else {
-						echo '<span style="color:red">not set</span>';
-					}
-					break;
-				case 'country':
-					$country = get_post_meta( $post_id, 'country', true );
-
-					if ( $country ) {
-						echo $this->country_list[ strtoupper( $country ) ];
-					} else {
-						echo '<span style="color:red">not set</span>';
-					}
-					break;
-				case 'study':
-					$study = get_post_meta( $post_id, 'study', true );
-
-					if ( $study ) {
-						echo $study;
-					}
-					break;
-			}
-		}
-
-		//****************************************************************************/
-		// Admin Languages and Country filters for Location CPT
 		//****************************************************************************/
 		function load_edit(): void {
 			global $typenow;
@@ -2138,52 +1555,6 @@ if ( ! class_exists( 'Store_Locations' ) ) {
 			<?php
 		} // End of Location export page callback		
 
-		function geocode( $address ) {
-
-			$apikey = get_option( 'gmap_api_key' );
-
-			if ( empty( $apikey ) ) {
-				return false;
-			}
-
-			// url encode the address
-			$address = urlencode( $address );
-
-			// google map geocode api url
-			$url = "https://maps.googleapis.com/maps/api/geocode/json?address=$address&key=$apikey";
-
-			// get the json response
-			$resp_json = file_get_contents( $url );
-
-			// decode the json
-			$resp = json_decode( $resp_json, true );
-
-			// response status will be 'OK', if able to geocode given address 
-			if ( $resp['status'] == 'OK' ) {
-
-				// get the important data
-				$lat  = $resp['results'][0]['geometry']['location']['lat'] ?? "";
-				$long = $resp['results'][0]['geometry']['location']['lng'] ?? "";
-
-				// verify if data is complete
-				if ( $lat && $long ) {
-
-					// put the data in the array
-					$data_arr = array();
-
-					array_push( $data_arr, $lat, $long );
-
-					return $data_arr;
-
-				} else {
-					return false;
-				}
-
-			} else {
-				return false;
-			}
-		} // End of geocode function
-
 		/**
 		 * Add custom field to quick edit screen.
 		 */
@@ -2212,6 +1583,33 @@ if ( ! class_exists( 'Store_Locations' ) ) {
                 </fieldset>
 				<?php
 			}
+		}
+
+		/**
+		 * Determine if we should load plugin assets
+		 */
+		private function should_load_assets(): bool {
+			// Check if we're on a locations page
+			if (is_singular('locations')) {
+				return true;
+			}
+
+			// Check if we're on a page with the shortcode
+			global $post;
+			if (is_a($post, 'WP_Post') && 
+				(has_shortcode($post->post_content, 'store-locations') || 
+				 has_block('store-locations/map'))) {
+				return true;
+			}
+
+			// Check if we're on the admin locations page
+			if (is_admin() && 
+				isset($_GET['post_type']) && 
+				$_GET['post_type'] === 'locations') {
+				return true;
+			}
+
+			return false;
 		}
 	}
 }
