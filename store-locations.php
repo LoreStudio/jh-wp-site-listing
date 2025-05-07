@@ -48,11 +48,35 @@ register_activation_hook(__FILE__, ['\StudySiteListing\Core\Activator', 'activat
 // Deactivation hook
 register_deactivation_hook(__FILE__, ['\StudySiteListing\Core\Deactivator', 'deactivate']);
 
+// Add debug logging function
+if (!function_exists('sl_debug_log')) {
+    function sl_debug_log($message) {
+        if (WP_DEBUG === true) {
+            if (is_array($message) || is_object($message)) {
+                error_log(print_r($message, true));
+            } else {
+                error_log($message);
+            }
+        }
+    }
+}
+
 // Plugin initialization
 add_action('plugins_loaded', function() {
+    sl_debug_log('Study Site Listing: plugins_loaded hook fired');
     $plugin = new Core\Plugin();
     $plugin->run();
 });
+
+// Add init hook for debugging
+add_action('init', function() {
+    sl_debug_log('Study Site Listing: init hook fired');
+}, 1);
+
+// Add admin_menu hook for debugging
+add_action('admin_menu', function() {
+    sl_debug_log('Study Site Listing: admin_menu hook fired');
+}, 1);
 
 // Plugin page links
 add_filter('plugin_action_links_' . plugin_basename(__FILE__), function($links) {
