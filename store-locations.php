@@ -3,12 +3,12 @@
  * @wordpress-plugin
  * Plugin Name: Study Site Listing
  * Description: A custom location management system that allows patients to search and view participating study sites near them. [store-locations map=yes]
- * Version: 4.5.2
+ * Version: 4.5.3
  * Text Domain: store-location
  */
 
 
-define( 'LOCATION_PLUGIN_VERSION', '4.5.2' );
+define( 'LOCATION_PLUGIN_VERSION', '4.5.3' );
 define( 'LOCATION_DIR_URI', plugin_dir_url( __FILE__ ));
 define( 'LOCATION_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'DISTANCE_MILES', 50);
